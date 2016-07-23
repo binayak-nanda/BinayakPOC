@@ -1,0 +1,40 @@
+CREATE FUNCTION ConstructErrorDetailDescription(INOUT pExcpListPath REFERENCE) RETURNS CHARACTER
+BEGIN
+	
+    DECLARE errorDescription CHARACTER;
+    DECLARE separator        CHARACTER ', ';
+    DECLARE dot              CHARACTER '.';
+    DECLARE tmpText          CHARACTER '';
+    
+    SET errorDescription = 'Line = ' || CAST(pExcpListPath.Line AS CHAR) || separator || 
+                           'Function = ' || COALESCE(pExcpListPath.Function, '[blank]') || separator ||
+                           'Type = ' || COALESCE(pExcpListPath.Type, '[blank]') || separator ||
+                           'Name = ' || COALESCE(pExcpListPath.Name, '[blank]') || separator ||
+                           'Label = ' || COALESCE(pExcpListPath.Label, '[blank]') || separator || 
+                           'Text = ' || COALESCE(pExcpListPath.Text, '[blank]');
+    
+     
+	DECLARE i INTEGER 1;   
+	
+	/* Loop through insert text. */
+	WHILE (CARDINALITY(pExcpListPath.Insert[i].*[]) > 0) DO
+		
+		-- There is a bug in broker which results in an unrecognised character for a truncated parsing exceptions. 
+		-- Further investigation is required. but will just skip text for now.
+	    IF (POSITION('truncated' IN pExcpListPath.Insert[i].Text) = 0) THEN
+	       SET tmpText = tmpText || dot || pExcpListPath.Insert[i].Text; 
+	    END IF;
+	    
+	    SET i = i + 1;
+		
+	END WHILE;
+
+    DECLARE finalText CHARACTER '';
+    SET finalText = errorDescription || tmpText;
+    IF LENGTH(finalText) > MAX_ERROR_DESCRIPTION_SIZE THEN
+    	SET finalText = SUBSTRING(finalText FROM 1 FOR MAX_ERROR_DESCRIPTION_SIZE);
+    END IF;
+    
+    RETURN finalText;
+
+END;

@@ -1,0 +1,170 @@
+BROKER SCHEMA shared
+
+DECLARE SOURCE__MSG_ID CONSTANT CHARACTER 'MSG_ID';
+DECLARE SOURCE__RESPONSE_Q CONSTANT CHARACTER 'RS_Q';
+DECLARE SOURCE__REQUEST_TYPE CONSTANT CHARACTER 'RQ_TYPE';
+DECLARE SOURCE__TRACKING_ID CONSTANT CHARACTER 'TRACK_ID';
+DECLARE SOURCE__IAM_USER_ID CONSTANT CHARACTER 'IAM_ID';
+DECLARE SOURCE__HTTP_ID CONSTANT CHARACTER 'HTTP_ID';
+DECLARE SOURCE__QEG_RS_Q CONSTANT CHARACTER 'QEG_RS_Q';
+DECLARE ORIG_APP CONSTANT CHARACTER 'ORIG_APP';
+DECLARE SOURCE__USER_ID CONSTANT CHARACTER 'USER_ID';
+DECLARE SOURCE__ALT_REF_ID CONSTANT CHARACTER 'ALT_ID';
+DECLARE SOURCE__HDR_MSG_ID CONSTANT CHARACTER 'HDR_ID';
+
+CREATE PROCEDURE extractJmsPropsFromJmsInput(IN envRef REFERENCE, IN inputRef REFERENCE)
+BEGIN
+		
+	-- Store MessageID and ReplyTo in environment to be inserted into the Evolve.SRXESB header.
+	SET envRef.Variables.Properties.JMSMessageID = inputRef.JMSTransport.Transport_Folders.Header_Values.JMSMessageID;
+	SET envRef.Variables.Properties.JMSReplyTo   = inputRef.JMSTransport.Transport_Folders.Header_Values.JMSReplyTo;
+				
+END;
+
+CREATE PROCEDURE extractJmsPropsFromRrfh2(IN envRef REFERENCE, IN rfh2Str CHARACTER)
+BEGIN
+		
+	DECLARE jmsMessageId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__MSG_ID);
+	DECLARE jmsReplyTo CHARACTER GetPropertyFromList(rfh2Str, SOURCE__RESPONSE_Q);
+	DECLARE requestType CHARACTER GetPropertyFromList(rfh2Str, SOURCE__REQUEST_TYPE);
+	DECLARE trackingId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__TRACKING_ID);
+	DECLARE origApp CHARACTER GetPropertyFromList(rfh2Str, ORIG_APP);
+	DECLARE httpId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__HTTP_ID);
+	DECLARE qegReplyToQ CHARACTER GetPropertyFromList(rfh2Str, SOURCE__QEG_RS_Q);
+	
+	DECLARE alternateReferenceId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__ALT_REF_ID);
+	DECLARE userId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__USER_ID);
+	DECLARE headerMessageId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__HDR_MSG_ID);
+			
+	-- Store MessageID and ReplyTo in environment to be inserted into the Evolve.SRXESB header.
+	SET envRef.Variables.Properties.JMSMessageID = jmsMessageId;
+	SET envRef.Variables.Properties.JMSReplyTo = jmsReplyTo;
+	SET envRef.Variables.Properties.requestType = requestType;
+	SET envRef.Variables.Properties.trackingId = trackingId;
+	SET envRef.Variables.Properties.origApp = origApp;
+	SET envRef.Variables.Properties.httpId = httpId;
+	SET envRef.Variables.Properties.qegReplyToQ = qegReplyToQ;
+	SET envRef.Variables.Properties.alternateReferenceNumber = alternateReferenceId;
+	SET envRef.Variables.Properties.userId = userId;
+	SET envRef.Variables.Properties.headerMessageId = headerMessageId;
+				
+END;
+
+CREATE PROCEDURE createRfh2JmsString(IN envRef REFERENCE, 
+									IN requestType CHARACTER, 
+									IN trackingId CHARACTER, 
+									IN origApp CHARACTER, 
+									IN iamUserId CHARACTER) RETURNS CHARACTER																										
+BEGIN
+	
+	DECLARE httpId CHARACTER '';
+	DECLARE qegReplyToQ CHARACTER '';
+	
+	RETURN createRfh2JmsString2(envRef, 
+								requestType, 
+								trackingId, 
+								origApp, 
+								iamUserId,
+								httpId,
+								qegReplyToQ);
+END;
+
+
+CREATE PROCEDURE createRfh2JmsString2(IN envRef REFERENCE, 
+									IN requestType CHARACTER, 
+									IN trackingId CHARACTER, 
+									IN origApp CHARACTER, 
+									IN iamUserId CHARACTER,
+									IN httpId CHARACTER,
+									IN qegReplyToQ CHARACTER) RETURNS CHARACTER
+									
+BEGIN
+		
+	DECLARE rfh2JmsStr CHARACTER;
+		
+	SET rfh2JmsStr  = SOURCE__MSG_ID ||'=' || envRef.Variables.Properties.JMSMessageID || ',' ||
+		                                              SOURCE__RESPONSE_Q || '=' || envRef.Variables.Properties.JMSReplyTo || ',' ||
+		                                              SOURCE__REQUEST_TYPE || '=' || requestType || ',' ||
+		                                              SOURCE__TRACKING_ID || '=' || trackingId || ',' ||
+		                                              ORIG_APP || '=' || origApp; 
+
+	IF LENGTH(iamUserId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__IAM_USER_ID || '=' || iamUserId;
+	END IF;
+
+	IF LENGTH(httpId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__HTTP_ID || '=' || httpId;
+	END IF;
+
+	IF LENGTH(qegReplyToQ) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__QEG_RS_Q || '=' || qegReplyToQ;
+	END IF;
+
+		                		               		                                              		                                              
+	RETURN rfh2JmsStr;			
+END;
+
+CREATE PROCEDURE createRfh2JmsString3(IN envRef REFERENCE, 
+									IN requestType CHARACTER, 
+									IN trackingId CHARACTER,
+									IN alternateReferenceId CHARACTER, 
+									IN origApp CHARACTER, 
+									IN userId CHARACTER,
+									IN httpId CHARACTER,
+									IN qegReplyToQ CHARACTER,
+									IN headerMessageId CHARACTER) RETURNS CHARACTER
+									
+BEGIN
+		
+	DECLARE rfh2JmsStr CHARACTER;
+		
+	SET rfh2JmsStr  = SOURCE__MSG_ID ||'=' || envRef.Variables.Properties.JMSMessageID || ',' ||
+		                                              SOURCE__RESPONSE_Q || '=' || envRef.Variables.Properties.JMSReplyTo || ',' ||
+		                                              SOURCE__REQUEST_TYPE || '=' || requestType || ',' ||
+		                                              SOURCE__TRACKING_ID || '=' || trackingId || ',' ||
+		                                              ORIG_APP || '=' || origApp; 
+
+	IF LENGTH(alternateReferenceId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__ALT_REF_ID || '=' || alternateReferenceId;
+	END IF;
+
+	IF LENGTH(userId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__USER_ID || '=' || userId;
+	END IF;
+	
+	IF LENGTH(headerMessageId) > 0 THEN
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__HDR_MSG_ID || '=' || headerMessageId; 
+	END IF;
+	
+	IF LENGTH(httpId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__HTTP_ID || '=' || httpId;
+	END IF;
+
+	IF LENGTH(qegReplyToQ) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__QEG_RS_Q || '=' || qegReplyToQ;
+	END IF;
+
+		                		               		                                              		                                              
+	RETURN rfh2JmsStr;			
+END;
+
+
+CREATE PROCEDURE GetRequestType(IN str CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE requestType CHARACTER GetPropertyFromList(str, SOURCE__REQUEST_TYPE);
+	RETURN requestType;	
+END;
+
+CREATE PROCEDURE GetTrackingId(IN str CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE trackingId CHARACTER GetPropertyFromList(str, SOURCE__TRACKING_ID);
+	RETURN trackingId;	
+END;
+
+CREATE PROCEDURE GetIamUserIdEsbSeg(IN str CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE iamUserId CHARACTER GetPropertyFromList(str, SOURCE__IAM_USER_ID);
+	RETURN iamUserId;	
+END;
+
+

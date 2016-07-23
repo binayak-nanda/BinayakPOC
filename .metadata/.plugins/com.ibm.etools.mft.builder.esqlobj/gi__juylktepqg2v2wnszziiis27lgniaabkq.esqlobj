@@ -1,0 +1,153 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+			  
+--	SET share1 = 	InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType;
+    SET OutputRoot.MQMD = InputRoot.MQMD;
+	DECLARE REQTYPE CHARACTER;
+	DECLARE REGIONREF CHARACTER;
+	--Creation of Reference Variables
+	--DECLARE refIN REFERENCE TO InputRoot.XMLNSC.P3CustomerInfo;
+	--DECLARE refOUT REFERENCE TO OutputRoot.XMLNSC.HDMProxyRequest;
+	    
+	--	SET Environment.Variables.RequestType     = 'CASCADE'; 
+	--	SET InputLocalEnvironment.Variables.RequestType2 = 'InputLocalEnv';
+		SET OutputLocalEnvironment.Variables.RequestType = InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType;	 
+	--  SET Shared.Varibles.RequestType4 = 'SharedRequestType';
+	--  SET LocalEnvironment.Variable.RequestType = 'CASCADE2';
+	
+	
+	DECLARE EMAIL_DISPLAY_NAME CHARACTER;
+    SET EMAIL_DISPLAY_NAME = COALESCE(InputRoot.XMLNSC.P3CustomerInfo.FirstName,'')|| COALESCE(InputRoot.XMLNSC.P3CustomerInfo.LastName,'');
+	
+	CASE
+	        --FOR NORTH REGION 
+	WHEN    InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Haryana'OR
+	  	InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Rajasthan'OR
+	  	InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Himachal-Pradesh' OR
+	  	InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Punjab'OR
+	 	InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Uttar-Pradesh-East'OR
+	  	InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Uttar-Pradesh-West' OR
+	  	InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Uttaranchal'OR
+	  	InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Jammu-and-Kashmir'THEN
+	  	 	SET REGIONREF = 'NORTH';
+	        --FOR SOUTH REGION
+	WHEN	    InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'A & N'OR
+		    InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Chennai'OR			
+	  	    InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'AndhraPradesh'OR
+	  	    InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Karnataka'OR
+	  	    InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Tamilnadu'OR
+	  	    InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Kerala' THEN
+	  	 	SET REGIONREF = 'SOUTH';
+	        --FOR EAST REGION
+	WHEN       InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Assam'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State ='Bihar'OR 
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'North-East-I'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'North-East-II'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Orissa'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'WestBengal'OR 
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Jharkhand'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Kolkata'THEN
+	  	 	SET REGIONREF = 'EAST';
+	        --FOR WEST REGOIN
+	WHEN       InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Madhya-Pradesh'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Maharashtra'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Chhattisgarh'OR
+	  	   InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State = 'Gujrath' THEN
+	  	        SET REGIONREF = 'WEST';
+	  	   
+	  END CASE;
+	  
+	  CASE
+	  WHEN 
+	  	        InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType='Create' OR
+	  	        InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType='CreateCascade'     THEN
+	  	        SET REQTYPE='InsertUserInfo' ;
+                
+                SET OutputRoot.XMLNSC.HDMProxyRequest.RequestType='InsertUserInfo';
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.OrderID=InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.P3OrderNumber;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PhoneNumber=InputRoot.XMLNSC.P3CustomerInfo.TelephoneNumber;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.FirstName=InputRoot.XMLNSC.P3CustomerInfo.FirstName;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.LastName=InputRoot.XMLNSC.P3CustomerInfo.LastName;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.Address1=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.Address1;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.Address2=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.Address2;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.City=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.City;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.ZIP=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.PINCode;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.State=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.Region=REGIONREF;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PPPOE_UserName=InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.PPPoEUserName;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PPPOE_Password=COALESCE(InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.PPPoEPassword,'password');
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailDisplayName=EMAIL_DISPLAY_NAME;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailUserName=SUBSTRING(InputRoot.XMLNSC.P3CustomerInfo.EmailId FROM 1 FOR (POSITION ('@' IN InputRoot.XMLNSC.P3CustomerInfo.EmailId)-1));
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailPassword=COALESCE(InputRoot.XMLNSC.P3CustomerInfo.EmailPassword,'password');
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailAddress=InputRoot.XMLNSC.P3CustomerInfo.EmailId;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailPOPServer='pop.bsnl.in';
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailPOPServerPort=110;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailSMTPServer='smtp.bsnl.in';
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailSMTPServerPort=25;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.DateOfCommission=CURRENT_DATE;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PackageDetails='Broadband';
+
+          
+          WHEN          
+                InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType ='Update' THEN
+	 	        SET REQTYPE='UpdateUserInfo' ;
+                
+                SET OutputRoot.XMLNSC.HDMProxyRequest.RequestType='UpdateUserInfo';
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.OrderID=InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.P3OrderNumber;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PhoneNumber=InputRoot.XMLNSC.P3CustomerInfo.TelephoneNumber;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.FirstName=InputRoot.XMLNSC.P3CustomerInfo.FirstName;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.LastName=InputRoot.XMLNSC.P3CustomerInfo.LastName;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.Address1=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.Address1;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.Address2=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.Address2;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.City=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.City;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.ZIP=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.PINCode;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.State=InputRoot.XMLNSC.P3CustomerInfo.CustAddress.State;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.Region=REGIONREF;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PPPOE_UserName=InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.PPPoEUserName;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PPPOE_Password=COALESCE(InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.PPPoEPassword,'password');
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailDisplayName=EMAIL_DISPLAY_NAME;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailUserName=SUBSTRING(InputRoot.XMLNSC.P3CustomerInfo.EmailId FROM 1 FOR (POSITION ('@' IN InputRoot.XMLNSC.P3CustomerInfo.EmailId)-1));
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailPassword=COALESCE(InputRoot.XMLNSC.P3CustomerInfo.EmailPassword,'password');
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailAddress=InputRoot.XMLNSC.P3CustomerInfo.EmailId;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailPOPServer='pop.bsnl.in';
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailPOPServerPort=110;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailSMTPServer='smtp.bsnl.in';
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.EmailSMTPServerPort=25;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.DateOfCommission=CURRENT_DATE;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PackageDetails='Broadband'; 
+
+
+          WHEN
+                InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType ='Disconnect' OR
+                InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType='DisconnectCascade'     THEN
+	  	        SET REQTYPE='DeleteUserInfo' ;
+                
+                SET OutputRoot.XMLNSC.HDMProxyRequest.RequestType ='DeleteUserInfo';
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.OrderID=InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.P3OrderNumber;
+                SET OutputRoot.XMLNSC.HDMProxyRequest.CustomerData.PPPOE_UserName=InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.PPPoEUserName;
+	 
+	  	
+	  	--WHEN  InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType='CreateModify'  OR
+	  	--      InputRoot.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType='DisconnectModify'     THEN	  	      
+	  	--      SET OutputRoot = InputRoot;
+	  	       
+          END CASE;
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;

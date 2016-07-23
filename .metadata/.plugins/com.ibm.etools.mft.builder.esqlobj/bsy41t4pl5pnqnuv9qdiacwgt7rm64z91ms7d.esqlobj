@@ -1,0 +1,19 @@
+CREATE PROCEDURE BuildPolicyKeyNoNS(IN outXML REFERENCE, IN policyValue CHARACTER, IN includesCompany BOOLEAN)
+	BEGIN
+		DECLARE policyKeyRef REFERENCE TO outXML;
+		CREATE FIELD outXML.PolicyKey;
+		MOVE policyKeyRef TO outXML.PolicyKey;
+		
+		DECLARE branchIndex INTEGER 1;
+
+		IF includesCompany THEN
+			SET policyKeyRef.Company = SUBSTRING(policyValue FROM 1 FOR 1);
+			SET branchIndex = 2;
+		ELSE 
+			SET policyKeyRef.Company = '1';
+		END IF;
+	
+		SET policyKeyRef.Branch = SUBSTRING(policyValue FROM branchIndex FOR 2);
+		SET policyKeyRef.Policy = SUBSTRING(policyValue FROM branchIndex + 2 FOR 7);
+		SET policyKeyRef.Type = SUBSTRING(policyValue FROM branchIndex + 9 FOR 3);
+	END;

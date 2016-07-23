@@ -1,0 +1,28 @@
+CREATE PROCEDURE ExtractHttpRequestParamater(IN httpParams CHARACTER, IN property CHARACTER)
+	RETURNS CHARACTER
+	BEGIN
+
+		DECLARE propertyValue CHARACTER '';
+		
+		DECLARE startIndex INTEGER POSITION(property IN httpParams);
+		 
+		IF startIndex > 0 THEN
+			SET startIndex = startIndex + LENGTH(property) + 1; -- The 1 is for the '=' character
+			
+			DECLARE ampersandIndex INTEGER POSITION('&' IN httpParams FROM startIndex);
+			DECLARE spaceIndex INTEGER POSITION(' ' IN httpParams FROM startIndex);
+			
+			IF ampersandIndex > 0 THEN
+				DECLARE valueLength INTEGER ampersandIndex - startIndex;
+				SET propertyValue = SUBSTRING(httpParams FROM startIndex FOR valueLength);
+			ELSEIF spaceIndex > 0 THEN
+				DECLARE valueLength INTEGER spaceIndex - startIndex;
+				SET propertyValue = SUBSTRING(httpParams FROM startIndex FOR valueLength);
+			ELSE
+				SET propertyValue = SUBSTRING(httpParams FROM startIndex);
+			END IF;
+			
+		END IF;
+		
+		RETURN propertyValue;		
+	END;

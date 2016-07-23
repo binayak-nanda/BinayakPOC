@@ -1,0 +1,542 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "title" : "Employee Service",
+    "description" : "This is the Employee Service used by the IIB BetaWorks REST API example",
+    "version" : "1.0.0"
+  },
+  "basePath" : "/TestWebApp/resources",
+  "tags" : [ {
+    "name" : "employees",
+    "description" : "Lists all of the employees at ACME"
+  }, {
+    "name" : "departments",
+    "description" : "Lists all of the departments at ACME"
+  } ],
+  "paths" : {
+    "/departments" : {
+      "get" : {
+        "tags" : [ "departments" ],
+        "summary" : "Retrieve a list of the departments",
+        "description" : "Retrieve a list of the departments",
+        "operationId" : "getDepartments",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "departments" ],
+        "summary" : "Creates a new department",
+        "description" : "Creates a new department in the database.  The <b>departmentNumber</b> that you specify must be unique. The department will not have a manager assigned.",
+        "operationId" : "createDepartment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Department"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Department"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "500" : {
+            "description" : "A problem occurred creating the department"
+          }
+        }
+      }
+    },
+    "/departments/{departmentNumber}" : {
+      "get" : {
+        "tags" : [ "departments" ],
+        "summary" : "Retrieve the details for a department",
+        "description" : "Retrieve the details for a department",
+        "operationId" : "getDepartment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "departmentNumber",
+          "in" : "path",
+          "description" : "The departmentNumber of the department",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The department cannot be found"
+          },
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "departments" ],
+        "summary" : "Updates an existing department",
+        "description" : "Updates an existing department in the database.",
+        "operationId" : "updateDepartment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Department"
+          }
+        }, {
+          "name" : "departmentNumber",
+          "in" : "path",
+          "description" : "The departmentNumber of the department to be updated",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The department cannot be found"
+          },
+          "200" : {
+            "description" : "Updated"
+          },
+          "400" : {
+            "description" : "There was a problem with the request"
+          },
+          "500" : {
+            "description" : "A problem occurred updating the department"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "departments" ],
+        "summary" : "Deletes an existing department",
+        "description" : "Deletes an existing department in the database.",
+        "operationId" : "deleteDepartment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "departmentNumber",
+          "in" : "path",
+          "description" : "The departmentNumber of the department to be deleted",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Deleted"
+          },
+          "404" : {
+            "description" : "The department cannot be found"
+          },
+          "500" : {
+            "description" : "A problem occurred deleting the department"
+          }
+        }
+      }
+    },
+    "/departments/{departmentNumber}/employees" : {
+      "get" : {
+        "tags" : [ "departments" ],
+        "summary" : "Retrieve the list of employees for a department",
+        "description" : "Retrieve the list of employees for a department",
+        "operationId" : "getDepartmentEmployees",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "departmentNumber",
+          "in" : "path",
+          "description" : "The departmentNumber of the department",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The department cannot be found"
+          },
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      }
+    },
+    "/departments/{departmentNumber}/manager" : {
+      "get" : {
+        "tags" : [ "departments" ],
+        "summary" : "Retrieve the manager for a department",
+        "description" : "Retrieve the manager for a department",
+        "operationId" : "getDepartmentManager",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "departmentNumber",
+          "in" : "path",
+          "description" : "The departmentNumber of the department",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The department cannot be found"
+          },
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "departments" ],
+        "summary" : "Assign the manager for a department",
+        "description" : "Assign the manager for a department",
+        "operationId" : "setDepartmentManager",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Employee"
+          }
+        }, {
+          "name" : "departmentNumber",
+          "in" : "path",
+          "description" : "The departmentNumber of the department",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The department or employee cannot be found"
+          },
+          "200" : {
+            "description" : "Updated"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      }
+    },
+    "/employees" : {
+      "get" : {
+        "tags" : [ "employees" ],
+        "summary" : "Retrieve a list of the employees",
+        "description" : "Retrieve a list of the employees",
+        "operationId" : "getEmployees",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "employees" ],
+        "summary" : "Creates a new employee",
+        "description" : "Creates a new employee in the database.  The <b>employeeNumber</b> that you specify must be unique. The employee will not have a department assigned.",
+        "operationId" : "createEmployee",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Employee"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Employee"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "500" : {
+            "description" : "A problem occurred creating the employee"
+          }
+        }
+      }
+    },
+    "/employees/{employeeNumber}" : {
+      "get" : {
+        "tags" : [ "employees" ],
+        "summary" : "Retrieve the details for an employee",
+        "description" : "Retrieve the details for an employee",
+        "operationId" : "getEmployee",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "employeeNumber",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The employee cannot be found"
+          },
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "employees" ],
+        "summary" : "Updates an existing employee",
+        "description" : "Updates an existing employee in the database.",
+        "operationId" : "updateEmployee",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Employee"
+          }
+        }, {
+          "name" : "employeeNumber",
+          "in" : "path",
+          "description" : "The employeeNumber of the employee to be updated",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The employee cannot be found"
+          },
+          "200" : {
+            "description" : "Updated"
+          },
+          "400" : {
+            "description" : "There was a problem with the request"
+          },
+          "500" : {
+            "description" : "A problem occurred updating the employee"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "employees" ],
+        "summary" : "Deletes an existing employee",
+        "description" : "Deletes an existing employee in the database.",
+        "operationId" : "deleteEmployee",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "employeeNumber",
+          "in" : "path",
+          "description" : "The employeeNumber of the employee to be deleted",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Deleted"
+          },
+          "404" : {
+            "description" : "The employee cannot be found"
+          },
+          "500" : {
+            "description" : "A problem occurred deleting the employee"
+          }
+        }
+      }
+    },
+    "/employees/{employeeNumber}/department" : {
+      "get" : {
+        "tags" : [ "employees" ],
+        "summary" : "Retrieve the department for an employee",
+        "description" : "Retrieve the department for an employee",
+        "operationId" : "getEmployeeDepartment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "employeeNumber",
+          "in" : "path",
+          "description" : "The employeeNumber of the employee",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "employees" ],
+        "summary" : "Assign the department for the employee",
+        "description" : "Assign the department for the employee",
+        "operationId" : "setEmployeeDepartment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Department"
+          }
+        }, {
+          "name" : "employeeNumber",
+          "in" : "path",
+          "description" : "The employeeNumber of the employee",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The employee or department cannot be found"
+          },
+          "200" : {
+            "description" : "Updated"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      }
+    },
+    "/employees/{educationLevel}/predictSalary" : {
+      "get" : {
+        "tags" : [ "employees" ],
+        "summary" : "Retrieve the predicted salary for an employee",
+        "description" : "Retrieve the predicted salary for an employee",
+        "operationId" : "predictSalary",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "educationLevel",
+          "in" : "path",
+          "description" : "The educationLevel of the employee",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Something wrong in Server"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Department" : {
+      "required" : [ "departmentNumber", "location", "name" ],
+      "properties" : {
+        "departmentNumber" : {
+          "type" : "string",
+          "description" : "Department number"
+        },
+        "admrdept" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Department name"
+        },
+        "location" : {
+          "type" : "string",
+          "description" : "Location"
+        }
+      },
+      "description" : "Department resource representation"
+    },
+    "Employee" : {
+      "required" : [ "dateOfBirth", "employeeNumber", "firstName", "hireDate", "lastName", "middleInitial", "sex" ],
+      "properties" : {
+        "employeeNumber" : {
+          "type" : "string",
+          "description" : "Employee number"
+        },
+        "dateOfBirth" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date of birth in ISO-8601 format"
+        },
+        "commission" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Commission"
+        },
+        "educationLevel" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Education Level"
+        },
+        "firstName" : {
+          "type" : "string",
+          "description" : "First name"
+        },
+        "hireDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Hire Date  in ISO-8601 format"
+        },
+        "job" : {
+          "type" : "string",
+          "description" : "Job"
+        },
+        "lastName" : {
+          "type" : "string",
+          "description" : "Last name"
+        },
+        "middleInitial" : {
+          "type" : "string",
+          "description" : "Middle initial"
+        },
+        "phoneNumber" : {
+          "type" : "string",
+          "description" : "Phone Number"
+        },
+        "salary" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Salary"
+        },
+        "sex" : {
+          "type" : "string",
+          "description" : "Sex",
+          "enum" : [ "M", "F" ]
+        }
+      },
+      "description" : "Employee resource representation"
+    }
+  }
+}

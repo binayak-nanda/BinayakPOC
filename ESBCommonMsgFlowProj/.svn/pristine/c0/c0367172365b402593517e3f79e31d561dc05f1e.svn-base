@@ -1,0 +1,127 @@
+BROKER SCHEMA shared
+
+
+	CREATE PROCEDURE AddRfh2ToMessage(INOUT OutputRoot REFERENCE, IN correlId CHARACTER, IN replyToQ CHARACTER, IN httpId CHARACTER, IN soapId CHARACTER) 
+	BEGIN
+
+--	Create a RFH2 header to store data across the call to the mainframe
+		CREATE NEXTSIBLING of OutputRoot.MQMD DOMAIN 'MQRFH2';
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)Flags 			= MQRFH_NONE;
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)Format 			= MQFMT_STRING;
+--		SET OutputRoot.MQRFH2.(MQRFH2.Field)NamareValueCCSID	= 1208;
+--		SET OutputRoot.MQRFH2.(MQRFH2.Field)CodedCharSetId 	= 1208;	
+
+--		DECLARE mqrfh2Message CHARACTER;		
+--		SET mqrfh2Message = getMQ_CORREL_ID() || '=' || COALESCE(correlId, '')
+--				|| ',' || getREPLY_TO_QUEUE() || '=' || COALESCE(replyToQ, '')
+--				|| ',' || getHTTP_ID() || '=' || COALESCE(httpId, '');
+		
+--		SET OutputRoot.MQRFH2.usr.RequestIdentifier = mqrfh2Message;
+		SET OutputRoot.MQRFH2.usr.correlId = COALESCE(correlId, '');
+		SET OutputRoot.MQRFH2.usr.replyToQ = TRIM(COALESCE(replyToQ, ''));
+		SET OutputRoot.MQRFH2.usr.httpId = COALESCE(httpId, '');
+		SET OutputRoot.MQRFH2.usr.soapId = COALESCE(soapId, '');
+				
+	END;
+	
+	CREATE PROCEDURE AddSR010Details2Rfh2(INOUT OutputRoot REFERENCE, IN operation CHARACTER, IN transaction CHARACTER, IN ref CHARACTER, IN account CHARACTER, IN product CHARACTER)
+	BEGIN
+		SET OutputRoot.MQRFH2.usr.SR010.operation = COALESCE(operation, '');
+		SET OutputRoot.MQRFH2.usr.SR010.transaction = COALESCE(transaction, '');
+		SET OutputRoot.MQRFH2.usr.SR010.ref = COALESCE(ref, '');
+		SET OutputRoot.MQRFH2.usr.SR010.account = COALESCE(account, '');
+		SET OutputRoot.MQRFH2.usr.SR010.product = COALESCE(product, '');
+	END;
+
+	
+	
+	CREATE PROCEDURE SetDestinationQueue(IN queueName CHAR, IN OutputLocalEnvironment REFERENCE) 
+	BEGIN
+		SET OutputLocalEnvironment.Destination.MQDestinationList.DestinationData[1].queueName = queueName;
+	   -- SET OutputLocalEnvironment.Destination.MQDestinationList.DestinationData[1].queueManagerName = QueueManagerName;
+	END;		
+
+	CREATE PROCEDURE GetHttpId(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		DECLARE httpId CHARACTER TRIM(COALESCE(InputRootRef.MQRFH2.usr.httpId, ''));
+		RETURN httpId;
+	END;
+
+	CREATE PROCEDURE GetJMSMessageID(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		DECLARE jmsMessageID CHARACTER TRIM(COALESCE(InputRootRef.MQRFH2.usr.JMSMessageID, ''));
+		RETURN jmsMessageID;
+	END;
+
+	CREATE PROCEDURE GetJMSReplyTo(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		DECLARE jmsReplyTo CHARACTER TRIM(COALESCE(InputRootRef.MQRFH2.usr.JMSReplyTo, ''));
+		RETURN jmsReplyTo;
+	END;
+
+	CREATE PROCEDURE GetCorrelId(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		DECLARE correlId CHARACTER TRIM(COALESCE(InputRootRef.MQRFH2.usr.correlId, ''));
+		RETURN correlId;
+	END;
+
+	CREATE PROCEDURE GetReplyToQ(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		DECLARE replyToQ CHARACTER TRIM(COALESCE(InputRootRef.MQRFH2.usr.replyToQ, ''));
+		RETURN replyToQ;
+	END;
+	
+	CREATE PROCEDURE GetSoapId(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		DECLARE soapId CHARACTER TRIM(COALESCE(InputRootRef.MQRFH2.usr.soapId, ''));
+		RETURN soapId;
+	END;
+
+	CREATE PROCEDURE GetSR010Operation(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		RETURN COALESCE(InputRootRef.MQRFH2.usr.SR010.operation, '');
+	END;
+
+	CREATE PROCEDURE GetSR010Transaction(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		RETURN COALESCE(InputRootRef.MQRFH2.usr.SR010.transaction, '');
+	END;
+
+	CREATE PROCEDURE GetSR010Ref(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		RETURN COALESCE(InputRootRef.MQRFH2.usr.SR010.ref, '');
+	END;
+
+	CREATE PROCEDURE GetSR010Account(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		RETURN COALESCE(InputRootRef.MQRFH2.usr.SR010.account, '');
+	END;
+
+	CREATE PROCEDURE GetSR010Product(IN InputRootRef REFERENCE) RETURNS CHARACTER 
+	BEGIN
+		RETURN COALESCE(InputRootRef.MQRFH2.usr.SR010.product, '');
+	END;
+
+
+-- Convert the sub-tree of the XMLNSC document into the literal XML
+-- e.g. if I parsed '<a><b>42</b></a>' at the input node
+-- DECLARE s1 CHAR XMLNSCFolderToString(InputRoot.XMLNSC.a); -- s1 = '<a><b>42</b></a>'
+-- DECLARE s1 CHAR XMLNSCFolderToString(InputRoot.XMLNSC.a.b); -- s1 = '<b>42</b>'
+	CREATE FUNCTION XMLNSCFolderToString(IN fragment REFERENCE) RETURNS CHAR
+	BEGIN
+		RETURN CAST(ASBITSTREAM(fragment OPTIONS FolderBitStream CCSID 1208) AS CHAR CCSID 1208);
+	END;
+	
+-- Convert literal XML into an XMLNSC sub-tree, and add the sub-tree under an existing XMLNSC parent
+-- e.g. CREATE FIELD OutputRoot.XMLNSC;
+--      CALL StringToXMLNSCFolder('<a><b>42</b></a>', OutputRoot.XMLNSC);
+-- Structure is:
+-- OutputRoot
+--   XMLNSC
+--     a
+--       b = '42'
+	CREATE PROCEDURE StringToXMLNSCFolder(IN string CHAR, IN parent REFERENCE)
+	BEGIN
+		CREATE LASTCHILD OF parent PARSE(CAST(string AS BLOB CCSID 1208) CCSID 1208 OPTIONS FolderBitStream);
+	END;
+		

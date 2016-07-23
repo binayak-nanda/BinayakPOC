@@ -1,0 +1,25 @@
+CREATE PROCEDURE getLastExceptionDetail(IN exceptionTree reference, OUT messageNumber INTEGER, OUT messageText char)	
+    /****************************************************************************
+	 * A procedure that will get the details of the last exception from a message
+	 * IN exceptionTree:  The incoming exception list
+	 * OUT messageNumber:  The last message numberr.
+	 * OUT messageText: The last message text.
+	 *****************************************************************************/
+   BEGIN
+	    -- Create a reference to the first child of the exception list
+   	    declare ptrException reference to exceptionTree.*[1];
+   	    DECLARE index INTEGER;
+   	    -- keep looping while the moves to the child of exception list work 
+		WHILE lastmove(ptrException) DO
+			IF ptrException.Number IS NOT NULL THEN
+				SET messageNumber = ptrException.Number;
+				SET messageText = ptrException.Text;
+			END IF;
+			
+			SET index = CARDINALITY(ptrException.Insert[]);
+			IF index > 0 THEN
+  				SET messageText = ptrException.Insert[index].Text;
+			END IF;
+			move ptrException lastchild;
+		END WHILE; 
+	END;

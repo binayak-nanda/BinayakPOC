@@ -1,0 +1,10 @@
+CREATE FUNCTION ZeroOneBooleanType(flag INTEGER) RETURNS BOOLEAN
+BEGIN	
+	DECLARE flagResult BOOLEAN FALSE;
+		
+	IF (flag IS NOT NULL AND flag = 1) THEN 
+	  SET flagResult = TRUE;
+	END IF;		
+
+	RETURN flagResult;
+END;

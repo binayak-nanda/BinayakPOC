@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><mappingRoot xmlns="http://www.ibm.com/2008/ccl/Mapping" domainID="com.ibm.msl.mapping.xml" domainIDExtension="mb" mainMap="true" targetNamespace="default" version="8.0.5.0" xmlns:map="default">
+    <input path="/sample/iibadmin/SAMPLE_EMPLOYEE.xsd" var="var"/>
+    <input path="db:database(/SAMPLE.dbm,SAMPLE,db:schema-tables(IIBADMIN,EMPLOYEE))" var="SAMPLE"/>
+    <input path="jar:file://!com/ibm/msl/mapping/rdb/xsds/dbexception.xsd" var="var1"/>
+    <output path="/sample/iibadmin/SAMPLE_EMPLOYEE.xsd"/>
+    <namespaces>
+        <namespace kind="supplement" prefix="io" uri="http://sample/iibadmin"/>
+    </namespaces>
+    <generation engine="xquery"/>
+    <mappingDeclaration name="getEmp">
+        <input namespace="http://sample/iibadmin" path="$var/mb:msg(EMPLOYEE,assembly,XMLNSC,Properties)" var="ComIbmMessageAssembly_EMPLOYEE"/>
+        <input path="$SAMPLE/db:select(fn:false(),ResultSet(IIBADMIN/EMPLOYEE/EMPNO,IIBADMIN/EMPLOYEE/FIRSTNME,IIBADMIN/EMPLOYEE/MIDINIT,IIBADMIN/EMPLOYEE/LASTNAME,IIBADMIN/EMPLOYEE/WORKDEPT,IIBADMIN/EMPLOYEE/PHONENO,IIBADMIN/EMPLOYEE/HIREDATE,IIBADMIN/EMPLOYEE/JOB,IIBADMIN/EMPLOYEE/EDLEVEL,IIBADMIN/EMPLOYEE/SEX,IIBADMIN/EMPLOYEE/BIRTHDATE,IIBADMIN/EMPLOYEE/SALARY,IIBADMIN/EMPLOYEE/BONUS,IIBADMIN/EMPLOYEE/COMM),db:where('IIBADMIN.EMPLOYEE.EMPNO =  ?','?'=$ComIbmMessageAssembly_EMPLOYEE/io:EMPLOYEE/EMPNO))" var="dbselect"/>
+        <output namespace="http://sample/iibadmin" path="mb:msg(EmployeeResponse,assembly,XMLNSC,Properties)" var="ComIbmMessageAssembly_EmployeeResponse"/>
+        <move>
+            <input path="$ComIbmMessageAssembly_EMPLOYEE/Properties"/>
+            <output path="$ComIbmMessageAssembly_EmployeeResponse/Properties"/>
+            <override>
+                <assign value="{EmployeeServiceInterface}">
+                    <output path="$ComIbmMessageAssembly_EmployeeResponse/Properties/MessageSet"/>
+                </assign>
+            </override>
+        </move>
+        <transaction>
+            <select ref="dbselect">
+                <input path="$dbselect/ResultSet[1]"/>
+                <output path="$ComIbmMessageAssembly_EmployeeResponse/EmployeeResponse"/>
+                <condition>
+                    <if>
+                        <input path="." var="ResultSet"/>
+                        <output path="."/>
+                        <test lang="xpath">fn:count($ResultSet) &gt; 0</test>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/EMPNO"/>
+                            <output path="EMPLOYEE/EMPNO"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/FIRSTNME"/>
+                            <output path="EMPLOYEE/FIRSTNME"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/MIDINIT"/>
+                            <output path="EMPLOYEE/MIDINIT"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/LASTNAME"/>
+                            <output path="EMPLOYEE/LASTNAME"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/WORKDEPT"/>
+                            <output path="EMPLOYEE/WORKDEPT"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/PHONENO"/>
+                            <output path="EMPLOYEE/PHONENO"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/HIREDATE"/>
+                            <output path="EMPLOYEE/HIREDATE"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/JOB"/>
+                            <output path="EMPLOYEE/JOB"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/EDLEVEL"/>
+                            <output path="EMPLOYEE/EDLEVEL"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/SEX"/>
+                            <output path="EMPLOYEE/SEX"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/BIRTHDATE"/>
+                            <output path="EMPLOYEE/BIRTHDATE"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/SALARY"/>
+                            <output path="EMPLOYEE/SALARY"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/BONUS"/>
+                            <output path="EMPLOYEE/BONUS"/>
+                        </move>
+                        <move automap="true">
+                            <input path="$ResultSet/IIBADMIN/EMPLOYEE/COMM"/>
+                            <output path="EMPLOYEE/COMM"/>
+                        </move>
+                        <assign value="0">
+                            <output path="DBResp/UserReturnCode"/>
+                        </assign>
+                        <expression>
+                            <input path="$ResultSet/." var="ResultSet1"/>
+                            <output path="DBResp/RowsRetrieved"/>
+                            <code lang="xpath">fn:count($ResultSet1)</code>
+                        </expression>
+                    </if>
+                    <else>
+                        <input path="."/>
+                        <output path="."/>
+                        <assign value="0">
+                            <output path="DBResp/UserReturnCode"/>
+                        </assign>
+                        <expression>
+                            <input path="." var="ResultSet2"/>
+                            <output path="DBResp/RowsRetrieved"/>
+                            <code lang="xpath">fn:count($ResultSet2)</code>
+                        </expression>
+                    </else>
+                </condition>
+            </select>
+            <failure>
+                <input path="$var1/DBExceptions"/>
+                <output path="$ComIbmMessageAssembly_EmployeeResponse/EmployeeResponse"/>
+                <move>
+                    <input path="DBException[1]/Message"/>
+                    <output path="DBResp/SQL_Error_Message"/>
+                </move>
+                <move>
+                    <input path="DBException[1]/SQLState"/>
+                    <output path="DBResp/SQLState_SQLState"/>
+                </move>
+                <move>
+                    <input path="DBException[1]/ErrorCode"/>
+                    <output path="DBResp/SQLCode_ErrorCode"/>
+                </move>
+                <assign value="-1">
+                    <output path="DBResp/UserReturnCode"/>
+                </assign>
+                <assign value="0">
+                    <output path="DBResp/RowsRetrieved"/>
+                </assign>
+            </failure>
+        </transaction>
+    </mappingDeclaration>
+</mappingRoot>

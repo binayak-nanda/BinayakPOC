@@ -1,0 +1,8 @@
+CREATE PROCEDURE GetPolicyKeyWithCompany(IN policyKeyRef REFERENCE) RETURNS CHARACTER
+BEGIN	
+	DECLARE policyKey CHARACTER NULL;
+
+	SET policyKey = GetPolicyCompany(policyKeyRef.qbe:Company) || GetPolicyKey(policyKeyRef);
+	
+	RETURN policyKey;	
+END;

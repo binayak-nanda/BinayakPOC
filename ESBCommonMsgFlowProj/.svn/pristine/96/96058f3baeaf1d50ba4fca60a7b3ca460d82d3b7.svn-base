@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQGet.msgnode="ComIbmMQGet.msgnode" xmlns:ComIbmPassthru.msgnode="ComIbmPassthru.msgnode" xmlns:ComIbmTrace.msgnode="ComIbmTrace.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="MQContext/ReplyContext.msgflow"
+    nsPrefix="MQContext_ReplyContext.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.queueName" name="queueName" lowerBound="1" defaultValueLiteral="CONTEXT">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.parserMqrfh2cUseForMqrfh2Domain" name="parserMqrfh2cUseForMqrfh2Domain" lowerBound="1" defaultValueLiteral="false">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="ReplyContext" bundleName="MQContext/ReplyContext" pluginId="ESBCommonMsgFlowProj"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj16/ReplyContext.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj30/ReplyContext.gif"/>
+    <shortDescription xmi:type="utility:ConstantString" string="Retrieves context matching the reply and stores in the Environment"/>
+    <longDescription xmi:type="utility:ConstantString" string="The input message should be the reply to an earlier request.&#xD;&#xA;The entire context message tree is stored in Environment.Variables.ReplyContext.&#xD;&#xA;If the context message is not found, then the Environment is not populated (but the LocalEnvironment will contain MQ return &amp; reason codes).&#xD;&#xA;The MQGET is performed with no wait time, so the subflow is always non-blocking."/>
+    <composition>
+      <nodes xmi:type="ComIbmMQGet.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="304,20" queueName="CONTEXT" parserXmlnscMixedContentRetainMode="all" parserXmlnscCommentsRetainMode="all" parserXmlnscProcessingInstructionsRetainMode="all" generateMode="localEnvironment" waitInterval="0" inputMQMDLocation="InputLocalEnvironment.Variables.ReplyContext.MQMD" getWithMessageID="true" outputDataLocation="Environment.Variables.ReplyContext">
+        <translation xmi:type="utility:ConstantString" string="MQGet"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="10,20">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="MQContext/ReplyContext" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="497,20">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="MQContext/ReplyContext" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="194,20" computeExpression="esql://routine/MQContext#ReplyContext_PrepareMQMD.Main" computeMode="destination">
+        <translation xmi:type="utility:ConstantString" string="PrepareMQMD"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="398,20" computeExpression="esql://routine/MQContext#ReplyContext_CleanMQMD.Main" computeMode="destination">
+        <translation xmi:type="utility:ConstantString" string="CleanMQMD"/>
+      </nodes>
+      <nodes xmi:type="ComIbmPassthru.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="93,20" label="$MQSI Reply Context Version=$Revision: 1.1 $ MQSI$">
+        <translation xmi:type="utility:ConstantString" string="Passthrough"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="357,102" destination="file" filePath="c:\01_out.txt" pattern="TIME=${CURRENT_TIMESTAMP}&#xD;&#xA;${Root}&#xD;&#xA;${Environment}">
+        <translation xmi:type="utility:ConstantString" string="out"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="391,153" destination="file" filePath="c:\02_warning.txt" pattern="TIME=${CURRENT_TIMESTAMP}&#xD;&#xA;${Root}&#xD;&#xA;${Environment}">
+        <translation xmi:type="utility:ConstantString" string="warning"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_7" location="436,208" destination="file" filePath="c:\03_nomessage.txt" pattern="TIME=${CURRENT_TIMESTAMP}&#xD;&#xA;${Root}&#xD;&#xA;${Environment}">
+        <translation xmi:type="utility:ConstantString" string="nomessage"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_4" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_7" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.warning" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.noMessage" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Basic" configurable="true" describedAttribute="Property.queueName">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.queueName" bundleName="ComIbmMQGet" pluginId="com.ibm.etools.mft.ibmnodes"/>
+        <propertyDescriptor groupName="Group.ParseOptions" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.BooleanEditorWithCheckboxInFront" compiler="com.ibm.etools.mft.ibmnodes.compilers.BooleanPropertyCompiler" describedAttribute="Property.parserMqrfh2cUseForMqrfh2Domain">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.parserMqrfh2cUseForMqrfh2Domain" bundleName="ComIbmMQGet" pluginId="com.ibm.etools.mft.ibmnodes"/>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.queueName" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="ComIbmMQGet.msgnode#Property.queueName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.parserMqrfh2cUseForMqrfh2Domain" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="ComIbmMQGet.msgnode#Property.parserMqrfh2cUseForMqrfh2Domain"/>
+    </attributeLinks>
+  </eClassifiers>
+</ecore:EPackage>

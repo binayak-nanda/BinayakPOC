@@ -1,0 +1,174 @@
+PATH shared;
+
+CREATE FILTER MODULE ESBJMSFailureReplyRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		RETURN ReplyOnFailureJMS; -- This is a UDP.
+	END;
+
+END MODULE;
+
+CREATE FILTER MODULE ESBMQFailureReplyRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		RETURN ReplyOnFailureMQ; -- This is a UDP.
+	END;
+
+END MODULE;
+
+CREATE FILTER MODULE ESBMQFailureOutputLogicRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		RETURN ESBMQFailureOutputLogicFlag; -- This is a UDP.
+	END;
+
+END MODULE;
+
+CREATE FILTER MODULE JMSXDeliveryCountTwo
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+				
+	    IF (Root.JMSTransport.Transport_Folders.Standard_Properties.JMSXDeliveryCount = 2) THEN
+			/*
+			 i.e. This is initial error message that has been caught.
+			*/
+			RETURN TRUE;
+		ELSE
+			-- Backout count is > 0 which means that this message has already been through the catch logic.
+			-- Do not log this error to the queue.
+			RETURN FALSE;
+		END IF;	
+		
+		RETURN TRUE;
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE Test_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+		CALL CopyMessageHeaders();
+		
+	    DECLARE envRef REFERENCE TO Environment;
+
+ 		/*************************************************************************************
+         Preserve the content of RFH2 header if exists in the incoming message
+         otherwise, we bring across the MQMD.format to newly created MQRFH2.format
+        ***************************************************************************************/
+        IF InputRoot.MQRFH2 IS NOT NULL THEN
+	       SET OutputRoot.MQRFH2 = InputRoot.MQRFH2;
+        ELSE
+	       SET OutputRoot.MQRFH2.(MQRFH2.Field)Format = InputRoot.MQMD.Format;
+        END IF;
+
+        /* Populate MQRFH2 for additional information */
+        SET OutputRoot.MQRFH2.ESBEvent = envRef.Variables.QBE.ESBEvent;
+ 	 	
+ 	 	DECLARE cursor REFERENCE TO InputBody;
+ 	 	
+ 	 	IF LASTMOVE(cursor) = TRUE THEN
+ 	 	  -- EVAL('SET ' || 'OutputRoot.' || FIELDNAME(InputBody) || ' = InputBody;');
+ 	 	  SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+ 	 	END IF;
+			
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;
+
+CREATE FILTER MODULE ESBJMSCatchReplyRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE deliveryCount INT 0;
+		DECLARE replyResult BOOLEAN FALSE;
+		
+		SET deliveryCount = Root.JMSTransport.Transport_Folders.Standard_Properties.JMSXDeliveryCount;
+		
+		IF (ReplyOnCatchJMS AND (deliveryCount = 3)) THEN
+			SET replyResult = TRUE;
+		ELSE
+			SET replyResult = FALSE;
+		END IF;
+		
+		-- RETURN ReplyOnCatchJMS; -- This is a UDP.
+		RETURN replyResult;
+	END;
+
+END MODULE;
+
+CREATE FILTER MODULE ESBJMSCatchOutputLogicRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+	   RETURN ESBJMSCatchOutputLogicFlag; -- This is a UDP.
+		
+	END;
+
+END MODULE;
+
+CREATE FILTER MODULE IsDeliveryCount3
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE deliveryCount INT 0;
+		DECLARE outputResult BOOLEAN FALSE;
+		
+		SET deliveryCount = Root.JMSTransport.Transport_Folders.Standard_Properties.JMSXDeliveryCount;
+		
+		IF (deliveryCount = 3) THEN
+			SET outputResult = TRUE;
+		ELSE
+			SET outputResult = FALSE;
+		END IF;
+		
+		
+		RETURN outputResult;
+	END;
+
+END MODULE;
+
+CREATE FILTER MODULE ESBMQCatchReplyRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		RETURN ReplyOnCatchMQ; -- This is a UDP.
+	END;
+
+END MODULE;
+
+
+CREATE FILTER MODULE BackoutCountTwo
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+	    IF ("Root"."MQMD"."BackoutCount" = 2) THEN
+			/*
+			 i.e. This is initial error message that has been caught.
+			*/
+			RETURN TRUE;
+		ELSE
+			-- Backout count is > 0 which means that this message has already been through the catch logic.
+			-- Do not log this error to the queue.
+			RETURN FALSE;
+		END IF;	
+		
+	END;
+
+END MODULE;

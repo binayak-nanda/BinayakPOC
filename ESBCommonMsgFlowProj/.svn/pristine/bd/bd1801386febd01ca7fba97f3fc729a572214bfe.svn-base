@@ -1,0 +1,107 @@
+CREATE COMPUTE MODULE ESBLogHandler_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		DECLARE namespace CHARACTER;
+		SET namespace = FIELDNAMESPACE(OutputRoot.XMLNSC.[>]);
+		DECLARE ns NAMESPACE namespace;
+		DECLARE eventRef REFERENCE TO OutputRoot.XMLNSC.ns:ESBEvent.ns:Event;
+		IF NOT LASTMOVE(eventRef) THEN
+			THROW USER EXCEPTION VALUES('The input message is invalid');
+		END IF;
+		CALL FixTree(OutputRoot.XMLNSC.ns:ESBEvent);
+		
+		DECLARE payload BLOB eventRef.ns:MessageContext.ns:Payload;
+		DECLARE messageHeader BLOB;
+		IF EXISTS(eventRef.ns:MessageContext.ns:MessageHeader[]) THEN
+			SET messageHeader = CAST( ASBITSTREAM(eventRef.ns:MessageContext.ns:MessageHeader OPTIONS FolderBitStream CCSID 1208) AS BLOB CCSID 1208);
+		END IF;
+		
+		DECLARE id CHAR UUIDASCHAR;
+		-- insert record into database table: ESB_LOG --
+		DECLARE serviceName CHARACTER eventRef.ns:EventSource.ns:ServiceName;
+		DECLARE operation CHARACTER eventRef.ns:EventSource.ns:Operation;
+		PASSTHRU
+			'INSERT INTO ESB_LOG (
+			    ID,ROLE,LOG_TIMESTAMP,LOG_POINT,SERVICE_NAME,OPERATION,DIRECTION,"SOURCE",USER_ID,PROCESS_ID,
+			    COMPONENT_NAME,PROJECT_NAME,QUEUE_MANAGER_NAME,BROKER_NAME,EXECUTION_GROUP,MESSAGE_FLOW_NAME,COMPRESS_ALG,PAYLOAD,MESSAGE_ID,
+			    CORRELATION_ID,MESSAGE_SET,MESSAGE_TYPE,MESSAGE_FORMAT,ENCODING,CCSID,DESTINATION_TRANSPORT,DESTINATION_SERVER,DESTINATION_NAME,DESTINATION_TYPE,
+			    MESSAGE_HEADER,MESSAGE_STATUS,CONSUMER_USER_ID,TRANSACTION_ID)
+		    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 
+		           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+		           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+		           ?, ?, ?, ?)'                               
+			VALUES(id,
+			       NULLIF(eventRef.ns:Role,''),
+			       CAST(NULLIF(eventRef.ns:Timestamp,'') AS GMTTIMESTAMP FORMAT 'IU'),
+				   NULLIF(eventRef.ns:LogPoint,''),
+				   NULLIF(eventRef.ns:EventSource.ns:ServiceName,''),
+				   NULLIF(eventRef.ns:EventSource.ns:Operation,''),
+				   NULLIF(eventRef.ns:EventSource.ns:Direction,''),
+				   NULLIF(eventRef.ns:EventSource.ns:Source,''),
+				   LEFT(NULLIF(eventRef.ns:EventSource.ns:UserId,''),20),
+				   NULLIF(eventRef.ns:EventSource.ns:ProcessId,''),
+				   NULLIF(eventRef.ns:EventSource.ns:ComponentName,''),
+				   NULLIF(eventRef.ns:EventSource.ns:ProjectName,''),
+				   NULLIF(eventRef.ns:EventSource.ns:QueueManagerName,''),
+				   NULLIF(eventRef.ns:EventSource.ns:BrokerName,''),
+				   NULLIF(eventRef.ns:EventSource.ns:ExecutionGroup,''),
+				   NULLIF(eventRef.ns:EventSource.ns:MessageFlowName,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:CompressAlgo,''),
+				   NULLIF(payload,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:MessageId,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:CorrelationId,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:MessageSet,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:MessageType,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:MessageFormat,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:Encoding,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:CCSID,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:Destination.ns:Transport,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:Destination.ns:Server,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:Destination.ns:Name,''),
+				   NULLIF(eventRef.ns:MessageContext.ns:Destination.ns:Type,''),
+				   NULLIF(messageHeader,''),
+				   LEFT(NULLIF(eventRef.ns:EventSource.ns:MessageStatus,''),20),
+				   NULLIF(eventRef.ns:EventSource.ns:ConsumerUserId,''),
+				   NULLIF(eventRef.ns:EventSource.ns:TrackingId,''));
+			FOR appcontext AS eventRef.ns:EventCorrelation.ns:AppContext[] DO
+				PASSTHRU 'INSERT INTO ESB_LOG_APPCXT (ID, NAME, VALUE, LOG_TIMESTAMP)
+				VALUES(?, ?, ?, ?)'
+				VALUES(id, appcontext.ns:Name, appcontext.ns:Value,
+				CAST(NULLIF(eventRef.ns:Timestamp,'') AS GMTTIMESTAMP FORMAT 'IU'));
+			END FOR;
+			FOR errorinfo AS eventRef.ns:ErrorInfo.ns:Error[] DO
+				PASSTHRU 'INSERT INTO ESB_LOG_ERRORINFO(ID, SERVICE_NAME,LOG_TIMESTAMP, ERROR_CODE, ERROR_TEXT, 
+						  ERROR_SEVERITY, ERROR_TYPE, ERROR_DESCRIPTION, ERROR_SOURCE) 
+						  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)'
+				VALUES(id, 
+					   NULLIF(errorinfo.ns:ServiceName,''),
+					   CAST(NULLIF(errorinfo.ns:Timestamp,'') AS GMTTIMESTAMP FORMAT 'IU'),
+					   NULLIF(errorinfo.ns:ErrorCode,''),
+					   NULLIF(errorinfo.ns:ErrorText,''),
+					   NULLIF(errorinfo.ns:ErrorSeverity,''),
+					   NULLIF(errorinfo.ns:ErrorType,''),
+					   NULLIF(errorinfo.ns:ErrorDescription,''),
+					   NULLIF(errorinfo.ns:ErrorSource,''));
+			END FOR;
+		RETURN TRUE;
+	END;
+
+END MODULE;
+
+CREATE PROCEDURE FixTree(IN node REFERENCE)
+BEGIN
+	MOVE node FIRSTCHILD;
+	IF LASTMOVE(node) THEN
+		-- loop over children
+		WHILE LASTMOVE(node) DO
+			CALL FixTree(node);
+			MOVE node NEXTSIBLING;
+		END WHILE;
+	ELSE
+		-- still on the current node, which has no children
+		IF FIELDTYPE(node) = Name THEN
+			SET node VALUE = '';
+		END IF;
+	END IF;
+END;

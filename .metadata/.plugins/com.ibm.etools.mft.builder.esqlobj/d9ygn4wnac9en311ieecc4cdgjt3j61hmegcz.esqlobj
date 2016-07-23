@@ -1,0 +1,43 @@
+CREATE COMPUTE MODULE ESBFTPInput_MapFTPFailureToCommonEvent
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+		DECLARE inputRootRef REFERENCE TO InputRoot;
+		DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+		-- Cannot create reference to InputRoot directly as it throws an exception.
+
+		DECLARE envRef REFERENCE TO Environment;
+		DECLARE excpListPath REFERENCE TO InputExceptionList.*[1];		
+
+		CALL shared.StoreInputRoot(inputRootRef, envRef);
+		CALL LoadProperties(envRef);
+		SET Environment.Variables.QBE.ESBEvent.Event.Role = 'error';
+		DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+		CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+		SET eventRef.EventSource.UserId = BrokerUserId;
+		SET eventRef.MessageContext.Destination.Transport = 'ftp';
+		SET eventRef.MessageContext.Destination.Type = 'folder';
+		SET eventRef.MessageContext.Destination.Name = InputLocalEnvironment.File.Directory;
+
+		CALL MapErrorToCommonEvent(envRef, excpListPath);
+
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

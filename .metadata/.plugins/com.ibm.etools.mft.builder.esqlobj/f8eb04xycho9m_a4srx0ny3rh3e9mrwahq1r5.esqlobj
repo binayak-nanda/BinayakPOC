@@ -1,0 +1,8 @@
+CREATE PROCEDURE extractJmsPropsFromJmsInput(IN envRef REFERENCE, IN inputRef REFERENCE)
+BEGIN
+		
+	-- Store MessageID and ReplyTo in environment to be inserted into the Evolve.SRXESB header.
+	SET envRef.Variables.Properties.JMSMessageID = inputRef.JMSTransport.Transport_Folders.Header_Values.JMSMessageID;
+	SET envRef.Variables.Properties.JMSReplyTo   = inputRef.JMSTransport.Transport_Folders.Header_Values.JMSReplyTo;
+				
+END;

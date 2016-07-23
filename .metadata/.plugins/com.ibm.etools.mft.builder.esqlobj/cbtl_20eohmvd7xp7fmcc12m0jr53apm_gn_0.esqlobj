@@ -1,0 +1,9 @@
+CREATE PROCEDURE SetDestinationPropertiesInESBEvent(IN pESBEvent REFERENCE, IN pTransport CHARACTER, IN pServer CHARACTER, IN pDestinationName CHARACTER, IN pDestinationType CHARACTER) 
+BEGIN
+		
+	SET pESBEvent.MessageContext.Destination.Transport = pTransport;
+	SET pESBEvent.MessageContext.Destination.Server    = pServer;
+    SET pESBEvent.MessageContext.Destination.Name      = pDestinationName;
+    SET pESBEvent.MessageContext.Destination.Type      = pDestinationType;
+    		
+END;

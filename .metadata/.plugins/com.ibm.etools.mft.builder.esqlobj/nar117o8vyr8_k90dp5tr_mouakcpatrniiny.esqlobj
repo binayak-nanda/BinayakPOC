@@ -1,0 +1,8 @@
+CREATE PROCEDURE StoreInputRoot(IN inputRootRef REFERENCE, INOUT envRef REFERENCE)
+BEGIN
+    
+    IF (EXISTS(envRef.Variables.QBE.InputRoot[]) = FALSE) THEN
+    	SET envRef.Variables.QBE.InputRoot = inputRootRef;
+    END IF;
+
+END;

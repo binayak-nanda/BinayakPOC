@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><mappingRoot xmlns="http://www.ibm.com/2008/ccl/Mapping" domainID="com.ibm.msl.mapping.xml" domainIDExtension="mb" mainMap="true" targetNamespace="default" version="8.0.5.0" xmlns:map="default">
+    <inlinedXMLSchema><![CDATA[<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"> 
+    <xsd:element name="employeeNumber" type="xsd:string"/> 
+</xsd:schema>]]></inlinedXMLSchema>
+    <input path="jar:file://!com/ibm/etools/mft/map/xsds/predefined/BlobMessage.xsd" var="var1"/>
+    <input inlinedXMLSchema="true" path="../schema_0.xsd" var="var"/>
+    <output path="mbsharedlib://EmployeeServiceInterface/sample/iibadmin/SAMPLE_EMPLOYEE.xsd"/>
+    <namespaces>
+        <namespace kind="supplement" prefix="out" uri="http://sample/iibadmin"/>
+    </namespaces>
+    <generation engine="xquery"/>
+    <mappingDeclaration name="getEmployee_Mapping1">
+        <input path="$var1/mb:msg(BLOB,assembly,BLOB,LocalEnvironment,Properties)" var="ComIbmMessageAssembly_BLOB">
+            <cast castType="userDefined" path="$ComIbmMessageAssembly_BLOB/LocalEnvironment/REST/Input/Parameters/any" qualifier="employeeNumber" ref="var"/>
+        </input>
+        <output namespace="http://sample/iibadmin" path="mb:msg(EMPLOYEE,assembly,XMLNSC,Properties)" var="ComIbmMessageAssembly_EMPLOYEE"/>
+        <move>
+            <input path="$ComIbmMessageAssembly_BLOB/Properties"/>
+            <output path="$ComIbmMessageAssembly_EMPLOYEE/Properties"/>
+            <override>
+                <assign value="{EmployeeServiceInterface}">
+                    <output path="$ComIbmMessageAssembly_EMPLOYEE/Properties/MessageSet"/>
+                </assign>
+            </override>
+        </move>
+        <move>
+            <input path="$ComIbmMessageAssembly_BLOB/LocalEnvironment/REST/Input/Parameters/employeeNumber[1]"/>
+            <output path="$ComIbmMessageAssembly_EMPLOYEE/EMPLOYEE/EMPNO"/>
+        </move>
+    </mappingDeclaration>
+</mappingRoot>

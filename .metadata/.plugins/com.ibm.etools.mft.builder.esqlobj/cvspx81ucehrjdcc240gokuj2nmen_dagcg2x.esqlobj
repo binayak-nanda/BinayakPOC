@@ -1,0 +1,12 @@
+CREATE FUNCTION RetrieveDomainUserId(IN pInHdrRef REFERENCE, IN pDomainName CHARACTER) RETURNS CHARACTER
+BEGIN
+
+    DECLARE tempRow ROW; 
+    
+	-- Find Policy Tax Detail if exists. W112B.W112B_ABNM_KEY starts with P.
+	SET tempRow.currDomain[] = (SELECT I FROM pInHdrRef.MsgAuth.Domain[] AS I
+	                                 WHERE I.DomainName = pDomainName);
+	                                 
+    RETURN tempRow.currDomain.UserId;	                                 
+    
+END;

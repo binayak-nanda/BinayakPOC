@@ -1,0 +1,1340 @@
+BROKER SCHEMA shared
+
+DECLARE MAX_ERROR_DESCRIPTION_SIZE CONSTANT INTEGER 32000;
+
+DECLARE soapenv NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+
+DECLARE qbe NAMESPACE 'http://qbe.com.au/esb/schema/qbe/1';
+
+-- Set true to Y or anything else to N.
+CREATE FUNCTION ConvertFlag(pFlag BOOLEAN) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE flagResult CHARACTER 'N';
+	
+	IF (pFlag) THEN 
+	  -- If pFlag is true then set it to 'Y'. Otherwise set it to N.
+	  SET flagResult = 'Y';
+	END IF;		
+
+	RETURN flagResult;
+END;
+
+-- Set message property settings - Set, Type & Format.
+CREATE PROCEDURE SetMessageProperties(IN pRootRef REFERENCE, IN pMsgSet CHARACTER, IN pMsgType CHARACTER, IN pMsgFormat CHARACTER) 
+BEGIN
+		
+	SET pRootRef.Properties.MessageSet    = pMsgSet;
+	SET pRootRef.Properties.MessageType   = pMsgType;
+    SET pRootRef.Properties.MessageFormat = pMsgFormat;
+		
+END;
+
+CREATE PROCEDURE MapBrkExcToStatusInfo(INOUT statusInfoRef REFERENCE, IN excpListPath REFERENCE)
+BEGIN
+
+		DECLARE statusIndRef REFERENCE TO statusInfoRef;
+		
+		/* Loop till the last child */
+		WHILE (CARDINALITY(excpListPath.*[]) > 0) DO
+		
+		    /* Check if exception number is available */
+		    IF (excpListPath.Number IS NOT NULL) THEN
+		    	
+		    	CREATE LASTCHILD OF statusInfoRef NAME 'Status';
+		    	MOVE statusIndRef TO statusInfoRef.Status[<];    	 
+		
+		        /* Store the current exception details */
+		        SET statusIndRef.Timestamp   = CURRENT_TIMESTAMP;
+		        SET statusIndRef.Code        = excpListPath.Number;
+		        SET statusIndRef.Text        = 'A failure has occurred in the Enterprise Service Bus while attempting to process the request';
+		        SET statusIndRef.Severity    = 'Error'; --excpListPath.Severity;
+		        SET statusIndRef.Type        = 'System';
+                CALL ConstructErrorDetailDescription(excpListPath) INTO statusIndRef.Description;
+		        SET statusIndRef.Source      = 'ESB';
+                             
+		    END IF;
+		    
+		    MOVE excpListPath LASTCHILD;
+				
+		END WHILE;	
+	
+END;
+
+
+CREATE PROCEDURE GetLastExceptionText(IN excpListPath REFERENCE) RETURNS CHARACTER
+BEGIN
+
+	DECLARE exceptionText CHARACTER '';
+
+	/* Loop till the last child */
+	WHILE (CARDINALITY(excpListPath.*[]) > 0) DO
+    	SET exceptionText = COALESCE(excpListPath.Text, '');
+	    MOVE excpListPath LASTCHILD;
+	END WHILE;	
+	
+	RETURN exceptionText;
+END;
+
+
+CREATE PROCEDURE GetExceptionText(IN excpListPath REFERENCE) RETURNS CHARACTER
+BEGIN
+
+	DECLARE exceptionText CHARACTER '';
+
+	/* Loop till the last child */
+	WHILE (CARDINALITY(excpListPath.*[]) > 0) DO
+    	SET exceptionText = exceptionText || ' - ' || COALESCE(excpListPath.Text, '');
+	    MOVE excpListPath LASTCHILD;
+	END WHILE;	
+	
+	RETURN exceptionText;
+END;
+-- Set message property settings - Set, Type & Format.
+CREATE PROCEDURE SetMessagePropertiesInESBEvent(IN pRootRef REFERENCE, IN pESBEvent REFERENCE) 
+BEGIN
+		
+	SET pESBEvent.MessageContext.MessageSet    = pRootRef.Properties.MessageSet;
+	SET pESBEvent.MessageContext.MessageType   = pRootRef.Properties.MessageType;
+    SET pESBEvent.MessageContext.MessageFormat = pRootRef.Properties.MessageFormat;
+		
+END;
+
+-- Set the log point. pESBEvent = reference to Environment.Variables.QBE.ESBEvent.Event
+CREATE PROCEDURE SetLogPoint(IN pESBEvent REFERENCE, IN pLogPoint CHARACTER) 
+BEGIN
+	
+	SET pESBEvent.LogPoint = pLogPoint;	
+    		
+END;
+
+-- Set message property settings - Set, Type & Format.
+CREATE PROCEDURE SetDestinationPropertiesInESBEvent(IN pESBEvent REFERENCE, IN pTransport CHARACTER, IN pServer CHARACTER, IN pDestinationName CHARACTER, IN pDestinationType CHARACTER) 
+BEGIN
+		
+	SET pESBEvent.MessageContext.Destination.Transport = pTransport;
+	SET pESBEvent.MessageContext.Destination.Server    = pServer;
+    SET pESBEvent.MessageContext.Destination.Name      = pDestinationName;
+    SET pESBEvent.MessageContext.Destination.Type      = pDestinationType;
+    		
+END;
+
+DECLARE EVOLVE_DOMAIN CONSTANT CHARACTER 'EVOLVE';
+DECLARE IAM_DOMAIN CONSTANT CHARACTER 'IAM';
+
+CREATE PROCEDURE getEVOLVE_DOMAIN() RETURNS CHAR BEGIN RETURN EVOLVE_DOMAIN; END;
+CREATE PROCEDURE getIAM_DOMAIN() RETURNS CHAR BEGIN RETURN IAM_DOMAIN; END;
+
+
+-- Retrieve the userid for a selected domain.
+CREATE FUNCTION GetEvolveUserId(IN headerRef REFERENCE) RETURNS CHARACTER
+BEGIN
+	RETURN COALESCE(RetrieveDomainUserId(headerRef, EVOLVE_DOMAIN), '');
+END;
+
+
+-- Retrieve the userid for a selected domain.
+CREATE FUNCTION GetIamUserId(IN headerRef REFERENCE) RETURNS CHARACTER
+BEGIN
+	RETURN COALESCE(RetrieveDomainUserId(headerRef, IAM_DOMAIN), '');
+END;
+
+
+-- Retrieve the userid for a selected domain.
+CREATE FUNCTION RetrieveDomainUserId(IN pInHdrRef REFERENCE, IN pDomainName CHARACTER) RETURNS CHARACTER
+BEGIN
+
+    DECLARE tempRow ROW; 
+    
+	-- Find Policy Tax Detail if exists. W112B.W112B_ABNM_KEY starts with P.
+	SET tempRow.currDomain[] = (SELECT I FROM pInHdrRef.MsgAuth.Domain[] AS I
+	                                 WHERE I.DomainName = pDomainName);
+	                                 
+    RETURN tempRow.currDomain.UserId;	                                 
+    
+END;
+
+-- Convert integer to date.
+CREATE FUNCTION ConvertNumberToDate(pDate INTEGER, pDateFormat CHARACTER) RETURNS DATE
+BEGIN
+	
+	DECLARE targetDate DATE;
+	DECLARE charDate CHARACTER '';
+	
+	IF (pDate = 0 OR pDate = 99999999) THEN
+		SET targetDate = NULL;
+	ELSE
+		SET charDate = CAST(pDate AS CHARACTER);
+		SET targetDate = CAST(charDate AS DATE FORMAT pDateFormat);
+	END IF;	
+
+	RETURN targetDate;
+END;
+
+-- Convert date to string then check if valid.
+CREATE FUNCTION isValidDate(inDate INTEGER, fDateFormat CHARACTER) RETURNS DATE
+BEGIN
+
+	DECLARE fDate DATE;
+	IF (inDate = 0 or inDate = 99999999) THEN
+		SET fDate = NULL;
+	ELSE	
+		DECLARE pattern CHARACTER '00000000';
+		DECLARE charDate CHARACTER CAST(inDate AS CHARACTER FORMAT pattern);
+
+		DECLARE yearStr CHARACTER SUBSTRING(charDate from 1 FOR 4);
+
+		DECLARE yearInt INTEGER CAST (yearStr as INTEGER);
+
+		IF (yearInt <= 0) THEN
+			SET fDate = NULL;
+		ELSE
+			SET charDate = CAST(inDate AS CHARACTER);
+			SET fDate = CAST(charDate AS DATE FORMAT fDateFormat);
+		END IF;
+	END IF;
+
+	RETURN fDate;
+END;
+
+CREATE FUNCTION ConvertStringToDate(pDate CHARACTER, pDateFormat CHARACTER) RETURNS DATE
+BEGIN
+	
+	DECLARE targetDate DATE NULL;
+	DECLARE charDate CHARACTER '';
+	
+	IF pDate IS NOT NULL AND LENGTH(pDate) > 1 AND pDate <> '00000000' THEN
+		SET targetDate = CAST(pDate AS DATE FORMAT pDateFormat);
+	END IF;	
+
+	RETURN targetDate;
+END;
+
+CREATE FUNCTION ConvertStringToInteger(pString CHARACTER) RETURNS INTEGER
+BEGIN
+	
+    DECLARE targetInteger INTEGER CAST(pString AS INTEGER DEFAULT 0);
+
+	RETURN targetInteger;
+END;
+
+CREATE FUNCTION FormatDecimalNumber(IN number CHARACTER, IN pattern CHARACTER) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE decimalNumber DECIMAL CAST(number AS DECIMAL DEFAULT 0.0);
+	
+    DECLARE formattedNumber CHARACTER CAST(decimalNumber AS CHARACTER FORMAT pattern);
+
+	RETURN formattedNumber;
+END;
+
+
+
+-- Set Y to true or anything else to false.
+CREATE FUNCTION ConvertYNToBoolean(flag CHARACTER) RETURNS BOOLEAN
+BEGIN
+	
+	DECLARE flagResult BOOLEAN FALSE;
+	
+--	IF flag NOT IN ('Y','N') THEN
+--	   THROW USER EXCEPTION MESSAGE 9999 VALUES('Boolean character not Y or N.');
+--	END IF;
+	
+	IF flag IS NOT NULL THEN
+		SET flag = UPPER(flag);
+	END IF;
+	
+	IF (flag = 'Y' OR flag = 'YES' ) THEN 
+	  -- If pFlag is 'Y' then set it to true. Otherwise set it to false.
+	  SET flagResult = TRUE;
+	END IF;		
+
+	RETURN flagResult;
+END;
+
+
+CREATE PROCEDURE getStringBooleanValueAsYN(IN value CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR '';
+	
+	IF value IS NULL THEN
+		SET bool = '';
+	ELSE 
+		IF upper(value) = 'TRUE' or value = '1' THEN
+			SET bool = 'Y';
+		ELSE 
+			SET bool = 'N';
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;	
+
+
+
+CREATE PROCEDURE getBooleanValueAsYN(IN value BOOLEAN) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR '';
+	
+	IF value IS NULL THEN
+		SET bool = '';
+	ELSE 
+		IF value = TRUE THEN
+			SET bool = 'Y';
+		ELSE 
+			SET bool = 'N';
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;	
+
+
+-- Set Y to true or anything else to false.
+CREATE FUNCTION ZeroOneBooleanType(flag INTEGER) RETURNS BOOLEAN
+BEGIN	
+	DECLARE flagResult BOOLEAN FALSE;
+		
+	IF (flag IS NOT NULL AND flag = 1) THEN 
+	  SET flagResult = TRUE;
+	END IF;		
+
+	RETURN flagResult;
+END;
+
+
+CREATE PROCEDURE getBooleanValueAsZeroOne(IN value BOOLEAN) RETURNS INTEGER
+BEGIN
+	DECLARE bool INTEGER 0;
+	
+	IF value IS NULL THEN
+		SET bool = 0;
+	ELSE 
+		IF value = TRUE THEN
+			SET bool = 1;
+		ELSE 
+			SET bool = 0;
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;	
+
+
+CREATE PROCEDURE getStringBooleanValueAsZeroOne(IN value CHARACTER) RETURNS INTEGER
+BEGIN
+	DECLARE bool INTEGER 0;
+	
+	IF value IS NULL THEN
+		SET bool = 0;
+	ELSE 
+		IF upper(value) = 'TRUE' or value = '1' THEN
+			SET bool = 1;
+		ELSE 
+			SET bool = 0;
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;	
+
+
+---- Convert integer to date but check whether the input is valid first.
+CREATE PROCEDURE PerformSafetyNetIntToDateConversion(INOUT pTargetField REFERENCE, IN pSourceField INTEGER, IN pDatePattern CHARACTER)
+BEGIN
+	
+	DECLARE tmpDate DATE;
+	
+	SET tmpDate = ConvertNumberToDate(pSourceField, pDatePattern);
+	
+	IF (tmpDate IS NULL) THEN
+		SET pTargetField.(XML.Content) = NULL;
+	ELSE 
+		SET pTargetField = tmpDate;
+	END IF;
+	
+END;
+
+
+-- This function loops through the insert*.text fields within an exception and constructs the detailed description.
+CREATE FUNCTION ConstructErrorDetailDescription(INOUT pExcpListPath REFERENCE) RETURNS CHARACTER
+BEGIN
+	
+    DECLARE errorDescription CHARACTER;
+    DECLARE separator        CHARACTER ', ';
+    DECLARE dot              CHARACTER '.';
+    DECLARE tmpText          CHARACTER '';
+    
+    SET errorDescription = 'Line = ' || CAST(pExcpListPath.Line AS CHAR) || separator || 
+                           'Function = ' || COALESCE(pExcpListPath.Function, '[blank]') || separator ||
+                           'Type = ' || COALESCE(pExcpListPath.Type, '[blank]') || separator ||
+                           'Name = ' || COALESCE(pExcpListPath.Name, '[blank]') || separator ||
+                           'Label = ' || COALESCE(pExcpListPath.Label, '[blank]') || separator || 
+                           'Text = ' || COALESCE(pExcpListPath.Text, '[blank]');
+    
+     
+	DECLARE i INTEGER 1;   
+	
+	/* Loop through insert text. */
+	WHILE (CARDINALITY(pExcpListPath.Insert[i].*[]) > 0) DO
+		
+		-- There is a bug in broker which results in an unrecognised character for a truncated parsing exceptions. 
+		-- Further investigation is required. but will just skip text for now.
+	    IF (POSITION('truncated' IN pExcpListPath.Insert[i].Text) = 0) THEN
+	       SET tmpText = tmpText || dot || pExcpListPath.Insert[i].Text; 
+	    END IF;
+	    
+	    SET i = i + 1;
+		
+	END WHILE;
+
+    DECLARE finalText CHARACTER '';
+    SET finalText = errorDescription || tmpText;
+    IF LENGTH(finalText) > MAX_ERROR_DESCRIPTION_SIZE THEN
+    	SET finalText = SUBSTRING(finalText FROM 1 FOR MAX_ERROR_DESCRIPTION_SIZE);
+    END IF;
+    
+    RETURN finalText;
+
+END;
+
+---- Convert integer to date but check whether the input is valid first.
+CREATE PROCEDURE Test()
+BEGIN
+	
+	DECLARE tmpDate CHARACTER;
+	
+	SET tmpDate = 'xyz';
+	
+END;
+
+CREATE FILTER MODULE ENVVariablesExist
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		DECLARE envRef REFERENCE TO Environment;
+		DECLARE sysVars REFERENCE TO envRef.ENV;
+		DECLARE mbVars REFERENCE TO envRef.ENV.MB;
+	
+	    IF ((CARDINALITY(sysVars.*[]) > 0) AND (CARDINALITY(mbVars.*[]) > 0)) THEN
+	    	
+			/*
+			 i.e. The GetEnv node has already been called. No need to call again.
+			*/
+			RETURN TRUE;
+		ELSE
+			-- GetEnv node has not been called. Need to call to get Environment details.
+			RETURN FALSE;
+		END IF;	
+		
+	END;
+
+END MODULE;
+
+CREATE FILTER MODULE BackoutCountExceeded
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+	    IF ("Root"."MQMD"."BackoutCount" < 3) THEN
+			/*
+			 i.e. message did not exceed the backout count as expected by the flow.
+			 Backout count on the queue should have been set to 3 and hence if the
+			 queue is configured correctly when the msg hits this point the backout
+			 count on the MQMD should NOT be less than 3
+			*/
+			RETURN FALSE;
+		ELSE
+			-- Backout count is >= 3 which is okay as the message will have been written
+			-- to exception down the catch path
+			RETURN TRUE;
+		END IF;	
+		
+	END;
+
+END MODULE;
+
+-- Populate Error Headers
+CREATE COMPUTE MODULE PopulateErrorHeaders
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+		SET OutputRoot.Properties = InputRoot.Properties;
+        CREATE LASTCHILD OF OutputRoot DOMAIN 'MQMD' NAME 'MQMD';
+        SET OutputRoot.MQMD       = InputRoot.MQMD;
+		
+		
+		DECLARE envRef REFERENCE TO Environment;
+
+		/********************************************************
+		 Set MQDLH header information
+		*********************************************************/
+		SET OutputRoot.MQMD.Format           = MQFMT_DEAD_LETTER_HEADER;		
+		SET OutputRoot.MQDLH.StrucId 		 = MQDLH_STRUC_ID;
+		SET OutputRoot.MQDLH.Version 		 = MQDLH_VERSION_1;
+		SET OutputRoot.MQDLH.Reason 		 = 0;
+		SET OutputRoot.MQDLH.DestQName 		 = InputRoot.MQMD.SourceQueue;
+		SET OutputRoot.MQDLH.DestQMgrName 	 = InputRoot.MQMD.ReplyToQMgr;
+		SET OutputRoot.MQDLH.Encoding 		 = InputRoot.MQMD.Encoding;
+		SET OutputRoot.MQDLH.CodedCharSetId  = InputRoot.MQMD.CodedCharSetId;
+		SET OutputRoot.MQDLH.Format          = 'MQRFH2  ';
+		SET OutputRoot.MQDLH.PutApplType 	 = InputRoot.MQMD.PutApplType;
+		SET OutputRoot.MQDLH.PutApplName 	 = InputRoot.MQMD.PutApplName;
+		SET OutputRoot.MQDLH.PutDate 		 = InputRoot.MQMD.PutDate;
+		SET OutputRoot.MQDLH.PutTime 		 = InputRoot.MQMD.PutTime;
+		SET OutputRoot.MQMD.ApplIdentityData = 'SET APPLIDENTITYDATA';
+		
+
+ 		/*************************************************************************************
+         Preserve the content of RFH2 header if exists in the incoming message
+         otherwise, we bring across the MQMD.format to newly created MQRFH2.format
+        ***************************************************************************************/
+        IF InputRoot.MQRFH2 IS NOT NULL THEN
+	       SET OutputRoot.MQRFH2 = InputRoot.MQRFH2;
+        ELSE
+	       SET OutputRoot.MQRFH2.(MQRFH2.Field)Format = InputRoot.MQMD.Format;
+        END IF;
+
+        /* Populate MQRFH2 for additional information */
+        SET OutputRoot.MQRFH2.ESBEvent = envRef.Variables.QBE.ESBEvent;
+ 	 	
+ 	 	DECLARE cursor REFERENCE TO InputBody;
+ 	 	
+ 	 	IF LASTMOVE(cursor) = TRUE THEN
+ 	 	  -- EVAL('SET ' || 'OutputRoot.' || FIELDNAME(InputBody) || ' = InputBody;');
+ 	 	  SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+ 	 	END IF;
+
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;
+
+
+CREATE FILTER MODULE MQReplyRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+	    IF (LENGTH(TRIM(Root.MQMD.ReplyToQ)) > 0) THEN
+			/*
+			 Reply to calling application required.
+  		    */
+			RETURN TRUE;
+		ELSE
+			/*
+			 No Reply.
+			*/
+			RETURN FALSE;
+		END IF;			
+
+	END;
+
+END MODULE;
+
+-- Get property value from comma separated list. 'field1=123,field2=987'
+CREATE FUNCTION GetPropertyFromList(pList CHARACTER, pProperty CHARACTER) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE startIndex    INT; 
+	DECLARE propertyValue CHARACTER '';
+	DECLARE commaIndex    INT;
+	DECLARE valueLength   INT;
+		
+	SET startIndex = POSITION(pProperty IN pList); 
+				
+	IF startIndex > 0 THEN 			
+		SET startIndex = startIndex + LENGTH(pProperty) + 1; -- The 1 is for the '=' character
+		SET commaIndex = POSITION(',' IN pList FROM startIndex);
+			
+		IF commaIndex > 0 THEN
+			SET valueLength = commaIndex - startIndex;
+			SET propertyValue = SUBSTRING(pList FROM startIndex FOR valueLength);
+		ELSE	
+			SET propertyValue = SUBSTRING(pList FROM startIndex);
+		END IF;
+			
+	END IF;
+
+    RETURN propertyValue;
+		
+END;
+
+
+-- Convert integer to date.
+CREATE FUNCTION ConvertNumberToStringDate(IN integerDate INTEGER, IN dateLength INTEGER) RETURNS CHARACTER
+BEGIN	
+	DECLARE stringDate CHARACTER '';	
+	DECLARE strDate CHARACTER CAST (integerDate as CHARACTER);
+	--getEVOLVE_DATE_LENGTH()
+	IF strDate IS NOT NULL AND LENGTH(strDate) >= dateLength THEN
+		
+		DECLARE dayStr CHAR;
+		DECLARE monthStr CHAR;
+		DECLARE yearStr CHAR;
+				
+		SET yearStr = SUBSTRING(strDate FROM getEVOLVE_YEAR_START() FOR getYEAR_LENGTH());
+		SET monthStr = SUBSTRING(strDate FROM getEVOLVE_MONTH_START() FOR getMONTH_LENGTH());
+		SET dayStr = SUBSTRING(strDate FROM getEVOLVE_DAY_START() FOR getDAY_LENGTH());
+		
+		SET stringDate = yearStr || '-' || monthStr || '-' || dayStr;
+		
+	END IF;
+	
+	RETURN stringDate;	
+END;
+
+-- 2009-05-08T23:59:59.000+10:00
+-- 2010-01-30+11:00 to 20100130
+-- 1234567890
+CREATE FUNCTION ConvertStringDateYYYY_MM_DD_2_IntegerYYYYMMDD(IN inDate CHARACTER) RETURNS INTEGER
+BEGIN
+	DECLARE convertedDate INTEGER 0;
+	
+	IF LENGTH(inDate) >= 10 THEN
+		DECLARE dayStr CHAR;
+		DECLARE monthStr CHAR;
+		DECLARE yearStr CHAR;
+				
+		SET yearStr = SUBSTRING(inDate FROM 1 FOR 4);
+		SET monthStr = SUBSTRING(inDate FROM 6 FOR 2);
+		SET dayStr = SUBSTRING(inDate FROM 9 FOR 2);
+		
+		SET convertedDate = CAST ((yearStr || monthStr || dayStr) AS INTEGER);
+	END IF;
+	
+	RETURN convertedDate; 
+END;
+
+CREATE FUNCTION ConvertStringDateDD_MM_YYYY_2_IntegerYYYYMMDD(IN inDate CHARACTER) RETURNS INTEGER
+BEGIN
+	DECLARE convertedDate INTEGER 0;
+	
+	IF LENGTH(inDate) >= 10 THEN
+		DECLARE dayStr CHAR;
+		DECLARE monthStr CHAR;
+		DECLARE yearStr CHAR;
+				
+		SET dayStr = SUBSTRING(inDate FROM 1 FOR 2);
+		SET monthStr = SUBSTRING(inDate FROM 4 FOR 2);
+		SET yearStr = SUBSTRING(inDate FROM 7 FOR 4);
+		
+		SET convertedDate = CAST ((yearStr || monthStr || dayStr) AS INTEGER);
+	END IF;
+	
+	RETURN convertedDate; 
+END;
+
+CREATE FUNCTION ConvertStringDateDD_MM_YYYY_2_StringYYYY_MM_DD(IN inDate CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE convertedDate CHARACTER '';
+	
+	IF LENGTH(inDate) >= 10 THEN
+		DECLARE dayStr CHAR;
+		DECLARE monthStr CHAR;
+		DECLARE yearStr CHAR;
+				
+		SET dayStr = SUBSTRING(inDate FROM 1 FOR 2);
+		SET monthStr = SUBSTRING(inDate FROM 4 FOR 2);
+		SET yearStr = SUBSTRING(inDate FROM 7 FOR 4);
+		
+		SET convertedDate = yearStr || '-' || monthStr || '-' || dayStr;
+	END IF;
+	
+	RETURN convertedDate; 
+END;
+
+
+-- 01/1969
+-- 1234567
+CREATE FUNCTION ConvertStringDateMM_YYYY_2_StringMMYYYY(IN inDate CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE convertedDate CHARACTER '';
+	
+	IF LENGTH(inDate) >= 7 THEN
+		DECLARE monthStr CHAR;
+		DECLARE yearStr CHAR;
+				
+		SET yearStr = SUBSTRING(inDate FROM 4 FOR 4);
+		SET monthStr = SUBSTRING(inDate FROM 1 FOR 2);
+		
+		SET convertedDate = monthStr || yearStr;
+	END IF;
+	
+	RETURN convertedDate;
+END;
+
+-- 2009-05-08T23:59:59.000+10:00
+-- 1234567890123456789
+CREATE FUNCTION ConvertStringTimeYYYY_MM_DDTHH_MM_SS_2_StringHHMMSS(IN inTime CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE convertedTime CHARACTER '';
+	
+	IF LENGTH(inTime) >= 19 THEN
+		DECLARE hourStr CHAR;
+		DECLARE minStr CHAR;
+		DECLARE secStr CHAR;
+				
+		SET hourStr = SUBSTRING(inTime FROM 12 FOR 2);
+		SET minStr = SUBSTRING(inTime FROM 15 FOR 2);
+		SET secStr = SUBSTRING(inTime FROM 18 FOR 2);
+		
+		SET convertedTime = hourStr || minStr || secStr;
+	END IF;
+	
+	RETURN convertedTime;
+END;
+
+-- 01-02-2011 09:00
+CREATE FUNCTION ConvertStringTimeDD_MM_YYYY_HH_MM_2_StringTHH_MM_SS(IN inTime CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE convertedTime CHARACTER '';
+	
+	IF LENGTH(inTime) >= 16 THEN
+		DECLARE hourStr CHAR;
+		DECLARE minStr CHAR;
+		DECLARE secStr CHAR '00';
+				
+		SET hourStr = SUBSTRING(inTime FROM 12 FOR 2);
+		SET minStr = SUBSTRING(inTime FROM 15 FOR 2);
+		
+		SET convertedTime = 'T' || hourStr || ':' || minStr || ':' || secStr;
+	END IF;
+	
+	RETURN convertedTime;
+END;
+
+-- 2010-01-30+11:00 to 20100130
+-- 1234567890123456789
+CREATE FUNCTION ConvertStringTimeYYYY_MM_DDTHH_MM_2_StringHHMMSS(IN inTime CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE convertedTime CHARACTER '';
+	
+	IF LENGTH(inTime) >= 16 THEN
+		DECLARE hourStr CHAR;
+		DECLARE minStr CHAR;
+		DECLARE secStr CHAR '00';
+				
+		SET hourStr = SUBSTRING(inTime FROM 12 FOR 2);
+		SET minStr = SUBSTRING(inTime FROM 15 FOR 2);
+		
+		SET convertedTime = hourStr || minStr || secStr;
+	END IF;
+	
+	RETURN convertedTime;
+END;
+
+
+
+CREATE PROCEDURE BuildPolicyKeyNoNS(IN outXML REFERENCE, IN policyValue CHARACTER, IN includesCompany BOOLEAN)
+	BEGIN
+		DECLARE policyKeyRef REFERENCE TO outXML;
+		CREATE FIELD outXML.PolicyKey;
+		MOVE policyKeyRef TO outXML.PolicyKey;
+		
+		DECLARE branchIndex INTEGER 1;
+
+		IF includesCompany THEN
+			SET policyKeyRef.Company = SUBSTRING(policyValue FROM 1 FOR 1);
+			SET branchIndex = 2;
+		ELSE 
+			SET policyKeyRef.Company = '1';
+		END IF;
+	
+		SET policyKeyRef.Branch = SUBSTRING(policyValue FROM branchIndex FOR 2);
+		SET policyKeyRef.Policy = SUBSTRING(policyValue FROM branchIndex + 2 FOR 7);
+		SET policyKeyRef.Type = SUBSTRING(policyValue FROM branchIndex + 9 FOR 3);
+	END;
+
+
+
+CREATE PROCEDURE BuildPolicyKey(IN outXML REFERENCE, IN policyValue CHARACTER, IN includesCompany BOOLEAN)
+BEGIN
+	DECLARE useNameSpace BOOLEAN TRUE;
+	CALL BuildPolicyKeyNameSpace(outXML, policyValue, includesCompany, useNameSpace);
+END;
+
+CREATE PROCEDURE BuildPolicyKeyNameSpace(IN outXML REFERENCE, IN policyValue CHARACTER, IN includesCompany BOOLEAN, IN useNameSpace BOOLEAN)
+BEGIN	
+	DECLARE policyKeyRef REFERENCE TO outXML;
+
+	IF useNameSpace THEN
+		CREATE FIELD outXML.qbe:PolicyKey;
+		MOVE policyKeyRef TO outXML.qbe:PolicyKey;
+	ELSE 
+		CREATE FIELD outXML.PolicyKey;
+		MOVE policyKeyRef TO outXML.PolicyKey;
+	END IF;
+
+	DECLARE branchIndex INTEGER 1;
+
+	IF includesCompany THEN
+		SET policyKeyRef.qbe:Company = SUBSTRING(policyValue FROM 1 FOR 1);
+		SET branchIndex = 2;
+	ELSE 
+		SET policyKeyRef.qbe:Company = '1';
+	END IF;
+	
+	SET policyKeyRef.qbe:Branch = SUBSTRING(policyValue FROM branchIndex FOR 2);
+	SET policyKeyRef.qbe:Policy = SUBSTRING(policyValue FROM branchIndex + 2 FOR 7);
+	SET policyKeyRef.qbe:Type = SUBSTRING(policyValue FROM branchIndex + 9 FOR 3);
+	
+END;
+
+
+CREATE PROCEDURE GetPolicyKey(IN policyKeyRef REFERENCE) RETURNS CHARACTER
+BEGIN	
+	DECLARE policyKey CHARACTER NULL;
+	
+	SET policyKey =  GetPolicyBranch(policyKeyRef.qbe:Branch) ||
+			GetPolicyNumber(policyKeyRef.qbe:Policy) ||			
+			GetPolicyProduct(policyKeyRef.qbe:Type);
+	
+	RETURN policyKey;	
+END;
+
+CREATE PROCEDURE GetPolicyKeyNoNS(IN policyKeyRef REFERENCE) RETURNS CHARACTER
+BEGIN	
+	DECLARE policyKey CHARACTER NULL;
+	
+	SET policyKey =  GetPolicyBranch(policyKeyRef.Branch) ||
+			GetPolicyNumber(policyKeyRef.Policy) ||			
+			GetPolicyProduct(policyKeyRef.Type);
+	
+	RETURN policyKey;	
+END;
+
+
+CREATE PROCEDURE GetPolicyKeyWithCompany(IN policyKeyRef REFERENCE) RETURNS CHARACTER
+BEGIN	
+	DECLARE policyKey CHARACTER NULL;
+
+	SET policyKey = GetPolicyCompany(policyKeyRef.qbe:Company) || GetPolicyKey(policyKeyRef);
+	
+	RETURN policyKey;	
+END;
+
+CREATE PROCEDURE GetPolicyKeyWithCompanyNoNS(IN policyKeyRef REFERENCE) RETURNS CHARACTER
+BEGIN	
+	DECLARE policyKey CHARACTER NULL;
+
+	SET policyKey = GetPolicyCompany(policyKeyRef.Company) || GetPolicyKeyNoNS(policyKeyRef);
+	
+	RETURN policyKey;	
+END;
+
+
+
+CREATE PROCEDURE GetPolicyCompany(IN company REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF company IS NULL OR LENGTH(company) < 1 OR LENGTH(company) > 1 THEN
+		SET company = '1';
+	END IF;
+	
+	RETURN company;
+
+END;
+
+
+CREATE PROCEDURE GetPolicyBranch(IN branch REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF branch IS NULL OR LENGTH(branch) < 2 OR LENGTH(branch) > 2 THEN
+		SET branch = '  ';
+	END IF;
+	
+	RETURN branch;
+
+END;
+
+CREATE PROCEDURE StoreInputRoot(IN inputRootRef REFERENCE, INOUT envRef REFERENCE)
+BEGIN
+    
+    IF (EXISTS(envRef.Variables.QBE.InputRoot[]) = FALSE) THEN
+    	SET envRef.Variables.QBE.InputRoot = inputRootRef;
+    END IF;
+
+END;
+
+
+CREATE PROCEDURE GetPolicyNumber(IN number REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF number IS NULL OR LENGTH(number) < 7 OR LENGTH(number) > 7 THEN
+		SET number = '       ';
+	END IF;
+	
+	RETURN number;
+
+END;
+
+
+CREATE PROCEDURE GetPolicyProduct(IN product REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF product IS NULL OR LENGTH(product) < 3 OR LENGTH(product) > 3 THEN
+		SET product = '   ';
+	END IF;
+	
+	RETURN product;
+
+END;
+
+
+CREATE PROCEDURE TruncateToXDecimalPlaces(IN valueStr CHARACTER, IN numberOfDecimalPlaces INTEGER) RETURNS DECIMAL
+BEGIN	
+
+	DECLARE decimalValue DECIMAL CAST (valueStr AS DECIMAL);
+	
+	DECLARE truncatedDecimal DECIMAL ROUND (decimalValue, numberOfDecimalPlaces);
+	
+	RETURN truncatedDecimal;
+
+END;
+
+
+
+CREATE PROCEDURE CheckStatusCd(IN status CHARACTER, INOUT hasError BOOLEAN) 
+BEGIN	
+	IF status = 'VV' THEN
+		SET	hasError = TRUE;
+	END IF;
+END;
+
+CREATE PROCEDURE CheckStatuzCd(IN status CHARACTER, INOUT hasError BOOLEAN) 
+BEGIN	
+	IF status <> '****' THEN
+		SET	hasError = TRUE;
+	END IF;
+END;
+
+
+
+CREATE PROCEDURE TruncateIfNecessary(IN field CHAR, IN maxLength INTEGER) RETURNS CHAR BEGIN
+	
+	IF field IS NOT NULL AND LENGTH(field) > maxLength THEN
+		SET field = SUBSTRING(field FROM 1 FOR maxLength);
+	END IF;
+	
+	RETURN field;
+	
+END;
+
+--------------
+--- End SetSeg functions.
+-------------------------------------------------------------------------------------
+
+CREATE PROCEDURE b64Encode(IN source BLOB) 
+		RETURNS CHARACTER 
+		LANGUAGE JAVA 
+		EXTERNAL NAME "com.ibm.broker.javacompute.Base64.encode";
+
+CREATE PROCEDURE b64Decode(IN source CHAR) 
+		RETURNS BLOB 
+		LANGUAGE JAVA 
+		EXTERNAL NAME "com.ibm.broker.javacompute.Base64.decode";
+		
+		
+/* Pad Zero's plus append sign '+' or '-' 
+
+Eg: Input :9, element length 10 with sign
+    Output: +000000009
+    
+    Input :-3, length 4
+    Output: -003
+*/
+CREATE FUNCTION PadZeros(IN Element CHARACTER, IN LengthOfElement INTEGER, IN DefaultValue CHARACTER, IN includePlusSign BOOLEAN) RETURNS CHARACTER
+BEGIN
+	
+    DECLARE PaddedElement CHARACTER '';
+    DECLARE pSign INTEGER POSITION('+' IN Element);
+
+    IF pSign > 0 THEN
+    	SET Element = REPLACE(Element, '+', '');
+    END IF;
+    
+    IF CAST(Element AS INTEGER) >= 0 THEN 
+    	IF includePlusSign THEN
+			SET PaddedElement = COALESCE('+' || REPLACE(SPACE((LengthOfElement-1)-LENGTH(Element)), ' ','0') ||Element, DefaultValue);
+    	ELSE
+			SET PaddedElement = COALESCE(REPLACE(SPACE((LengthOfElement)-LENGTH(Element)), ' ','0') ||Element, DefaultValue);
+    	END IF;
+	ELSE
+		SET PaddedElement = COALESCE('-' || REPLACE(SPACE((LengthOfElement)-LENGTH(Element)), ' ','0') ||REPLACE(Element, '-', ''), DefaultValue);
+	END IF;   
+
+	RETURN PaddedElement;
+	
+
+END;
+
+
+CREATE PROCEDURE ValueIfNull(IN valuein CHARACTER, IN valueout CHARACTER) RETURNS CHARACTER
+BEGIN
+	
+	IF valuein IS NULL THEN
+		RETURN valueout;
+	ELSE
+		RETURN valuein;
+	END IF;
+	
+END;
+
+CREATE PROCEDURE getCharValueInBooleanChar(IN bool CHARACTER) RETURNS CHARACTER
+BEGIN		
+	IF bool IS NOT NULL AND (UPPER(bool) = 'TRUE' OR UPPER(bool) = 'Y' OR UPPER(bool) = 'YES') THEN
+		RETURN 'true';  --Leave as lower case. Used for AON.
+	ELSE
+		RETURN 'false';
+	END IF;		
+END;
+
+CREATE PROCEDURE getBoolValueInBooleanChar(IN bool BOOLEAN) RETURNS CHARACTER
+BEGIN		
+	IF bool THEN
+		RETURN 'true';  --Leave as lower case. Used for AON.
+	ELSE
+		RETURN 'false';
+	END IF;		
+END;
+
+		
+CREATE PROCEDURE getCharValueInBoolean(IN bool CHARACTER) RETURNS BOOLEAN
+BEGIN		
+	IF bool IS NOT NULL AND (UPPER(bool) = 'TRUE' OR UPPER(bool) = 'Y' OR UPPER(bool) = 'YES') THEN
+		RETURN TRUE;
+	ELSE
+		RETURN FALSE;
+	END IF;		
+END;
+
+		
+CREATE PROCEDURE getCharValueInBooleanReverse(IN bool CHARACTER) RETURNS BOOLEAN
+BEGIN		
+	IF UPPER(bool) = 'TRUE' OR UPPER(bool) = 'Y' OR UPPER(bool) = 'YES' THEN
+		RETURN FALSE;
+	ELSE
+		RETURN TRUE;
+	END IF;		
+END;
+
+
+CREATE PROCEDURE getBooleanValueInBoolean(IN value BOOLEAN) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR '';
+	
+	IF value IS NULL THEN
+		SET bool = NULL;
+	ELSE 
+		IF value = 'true' THEN
+			SET bool = 'Y';
+		ELSE 
+			SET bool = 'N';
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;	
+
+
+CREATE PROCEDURE getBooleanValueInChar(IN value CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR value;
+	
+	IF value IS NULL THEN
+		SET bool = NULL;
+	ELSE 
+		IF UPPER(value) = 'FALSE' OR UPPER(value) = 'F' OR UPPER(value) = 'NO' OR UPPER(value) = 'N' THEN
+			SET bool = 'N';
+		ELSE 
+			IF UPPER(value) = 'TRUE' OR UPPER(value) = 'T' OR UPPER(value) = 'YES' OR UPPER(value) = 'Y' THEN
+				SET bool = 'Y';
+			END IF;
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;
+	
+
+-- same as getBooleanValueInChar but reverse Y/N value
+CREATE PROCEDURE getBooleanValueInCharReverse(IN value CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR '';
+	
+	IF value IS NULL THEN
+		SET bool = NULL;
+	ELSE 
+		IF UPPER(value) = 'FALSE' OR UPPER(value) = 'F' OR UPPER(value) = 'NO' OR UPPER(value) = 'N' THEN
+			SET bool = 'Y';
+		ELSE 
+			IF UPPER(value) = 'TRUE' OR UPPER(value) = 'T' OR UPPER(value) = 'YES' OR UPPER(value) = 'Y' THEN
+				SET bool = 'N';
+			END IF;
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;
+
+
+-- Map the request operation not determined message to the status info
+CREATE PROCEDURE MapRqOpNotDeterminedToStatusInfo(INOUT statusInfoRef REFERENCE)
+BEGIN
+		CREATE LASTCHILD OF statusInfoRef NAME 'Status';   	 
+		
+        /* Store the current exception details */
+        SET statusInfoRef.Status.Timestamp   = CURRENT_TIMESTAMP;
+        SET statusInfoRef.Status.Code        = '3105';
+        SET statusInfoRef.Status.Text        = 'A failure has occurred in the Enterprise Service Bus while attempting to process the request';
+        SET statusInfoRef.Status.Severity    = 'Fatal';
+        SET statusInfoRef.Status.Type        = 'System';
+        SET statusInfoRef.Status.Description = 'Unable to determine the service operation. Ensure the message is well formed XML and the root element is a valid service operation.';
+        SET statusInfoRef.Status.Source      = 'ESB';
+        		
+END;
+
+-- Map the response operation not determined message to the status info
+CREATE PROCEDURE MapRsOpNotDeterminedToStatusInfo(INOUT statusInfoRef REFERENCE)
+BEGIN
+		CREATE LASTCHILD OF statusInfoRef NAME 'Status';   	 
+		
+        /* Store the current exception details */
+        SET statusInfoRef.Status.Timestamp   = CURRENT_TIMESTAMP;
+        SET statusInfoRef.Status.Code        = '3106';
+        SET statusInfoRef.Status.Text        = 'A failure has occurred in the Enterprise Service Bus while attempting to process the request';
+        SET statusInfoRef.Status.Severity    = 'Fatal';
+        SET statusInfoRef.Status.Type        = 'System';
+        SET statusInfoRef.Status.Description = 'Unable to determine the service operation. Ensure the response message contains a valid request type in the ESB segment.';
+        SET statusInfoRef.Status.Source      = 'ESB';
+        		
+END;
+
+
+CREATE PROCEDURE IsBlank(IN data CHARACTER) RETURNS BOOLEAN
+BEGIN
+	DECLARE isBlank BOOLEAN TRUE;
+	
+	IF data IS NOT NULL AND LENGTH(TRIM(data)) > 0 THEN
+		SET isBlank = FALSE;
+	END IF;
+	
+	RETURN isBlank;	
+END;
+
+
+CREATE PROCEDURE PopulateStatusInfoElement(IN statusRef REFERENCE, IN code CHARACTER, IN text CHARACTER, IN severity CHARACTER, IN source CHARACTER, IN statusType CHARACTER) 
+BEGIN
+	
+	DECLARE currTimestamp TIMESTAMP CURRENT_TIMESTAMP;
+	
+	SET statusRef.Timestamp   = currTimestamp;
+	SET statusRef.Code = code;
+	SET statusRef.Text = text;
+	SET statusRef.Severity = severity;
+	SET statusRef.Type = statusType;
+	SET statusRef.Description = text;
+	SET statusRef.Source = source;
+END;
+
+
+DECLARE THREE_DECIMAL_PLACES CONSTANT CHARACTER '0.000';
+DECLARE TWO_DECIMAL_PLACES CONSTANT CHARACTER '0.00';
+DECLARE ONE_DECIMAL_PLACES CONSTANT CHARACTER '0.0';
+
+DECLARE APPEND_ONE_ZERO CONSTANT CHARACTER '0';
+DECLARE APPEND_TWO_ZEROS CONSTANT CHARACTER '00';
+DECLARE APPEND_THREE_ZEROS CONSTANT CHARACTER '000';
+DECLARE APPEND_DECIMAL_AND_ONE_ZERO CONSTANT CHARACTER '.0';
+DECLARE APPEND_DECIMAL_AND_TWO_ZEROS CONSTANT CHARACTER '.00';
+DECLARE APPEND_DECIMAL_AND_THREE_ZEROS CONSTANT CHARACTER '.000';
+
+DECLARE DECIMAL_POINT CONSTANT CHARACTER '.';
+
+DECLARE ONE_DECIMAL_PLACE CONSTANT INTEGER 1;
+DECLARE TWO_DECIMAL_PLACE CONSTANT INTEGER 2;
+DECLARE THREE_DECIMAL_PLACE CONSTANT INTEGER 3;
+
+
+--At the moment this method will only add decimal places.. It will not remove decimal places if there are 
+-- too many. This is because I would like an error to occur due to rounding issues..
+CREATE PROCEDURE PadDecimalPlaces(IN element CHARACTER, IN decimalPlaces INTEGER) RETURNS CHARACTER
+BEGIN
+	DECLARE outputValue CHARACTER element;
+	
+	IF element IS NOT NULL THEN
+		DECLARE decimalPosition INTEGER POSITION(DECIMAL_POINT IN element);
+		
+		IF decimalPosition = 0 THEN
+			IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+				SET outputValue = outputValue || APPEND_DECIMAL_AND_ONE_ZERO;
+			ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+				SET outputValue = outputValue || APPEND_DECIMAL_AND_TWO_ZEROS;
+			ELSEIF decimalPlaces = THREE_DECIMAL_PLACE THEN
+				SET outputValue = outputValue || APPEND_DECIMAL_AND_THREE_ZEROS;
+			END IF;
+		ELSE
+			DECLARE decimalString CHARACTER SUBSTRING(element FROM decimalPosition);
+			DECLARE decimalStringLength INTEGER LENGTH(decimalString) - 1; --Take away the decimal place.
+			
+			IF decimalStringLength = 0 THEN
+				IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_ONE_ZERO;
+				ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_TWO_ZEROS;
+				ELSEIF decimalPlaces = THREE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_THREE_ZEROS;
+				END IF;				
+			ELSEIF decimalStringLength = 1 THEN				
+				IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+					-- Do nothing. 
+				ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_ONE_ZERO;
+				ELSEIF decimalPlaces = THREE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_TWO_ZEROS;
+				END IF;
+			ELSEIF decimalStringLength = 2 THEN				
+				IF decimalPlaces = THREE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_ONE_ZERO;
+				END IF;
+			END IF;				
+		END IF;
+		
+		
+	ELSE
+		IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+			SET outputValue = ONE_DECIMAL_PLACES;
+		ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+			SET outputValue = TWO_DECIMAL_PLACES;
+		END IF;
+	END IF;
+	
+	RETURN outputValue;
+END;
+
+--GET /icloseRq?sessionId=pibroker-f3ece615-56d7-45f8-a528-c1b0710c9892&request=EndPolicyFormProductRequest HTTP/1.1
+--User-Agent: Jakarta Commons-HttpClient/3.0
+--
+--Host: 10.88.30.200:2080
+	CREATE PROCEDURE ExtractHttpRequestParamater(IN httpParams CHARACTER, IN property CHARACTER)
+	RETURNS CHARACTER
+	BEGIN
+
+		DECLARE propertyValue CHARACTER '';
+		
+		DECLARE startIndex INTEGER POSITION(property IN httpParams);
+		 
+		IF startIndex > 0 THEN
+			SET startIndex = startIndex + LENGTH(property) + 1; -- The 1 is for the '=' character
+			
+			DECLARE ampersandIndex INTEGER POSITION('&' IN httpParams FROM startIndex);
+			DECLARE spaceIndex INTEGER POSITION(' ' IN httpParams FROM startIndex);
+			
+			IF ampersandIndex > 0 THEN
+				DECLARE valueLength INTEGER ampersandIndex - startIndex;
+				SET propertyValue = SUBSTRING(httpParams FROM startIndex FOR valueLength);
+			ELSEIF spaceIndex > 0 THEN
+				DECLARE valueLength INTEGER spaceIndex - startIndex;
+				SET propertyValue = SUBSTRING(httpParams FROM startIndex FOR valueLength);
+			ELSE
+				SET propertyValue = SUBSTRING(httpParams FROM startIndex);
+			END IF;
+			
+		END IF;
+		
+		RETURN propertyValue;		
+	END;
+
+
+CREATE PROCEDURE FormatIntegerAsDollar(IN value INTEGER) 
+RETURNS CHARACTER
+BEGIN
+	
+	DECLARE dollarFormat CHARACTER '';
+	
+	DECLARE pattern CHARACTER '$###,###,###';
+	SET dollarFormat = CAST(value AS CHARACTER FORMAT pattern);
+	
+	RETURN dollarFormat;	
+END;
+
+
+CREATE PROCEDURE BlankIfNull(IN data CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE charBlank CHARACTER ' ';
+		
+	IF data IS NOT NULL THEN
+		SET charBlank = data;
+	END IF;
+	
+	RETURN charBlank;	
+END;
+
+
+CREATE PROCEDURE ZeroIntegerIfNull(IN data CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE numZero CHARACTER '0';
+		
+	IF data IS NOT NULL THEN
+		IF data <> '' THEN
+			SET numZero = data;
+		END IF;
+	END IF;
+	
+	RETURN numZero;	
+END;
+
+
+CREATE PROCEDURE AddEventAppContext(IN environmentRef REFERENCE,
+								   IN name CHARACTER,
+								   IN value CHARACTER) 
+BEGIN
+	
+	DECLARE eventRef REFERENCE TO environmentRef.Variables.QBE.ESBEvent.Event;	
+	DECLARE eventCorrelationRef REFERENCE TO eventRef.EventCorrelation;
+	
+	DECLARE appContextIndex INTEGER CARDINALITY(eventCorrelationRef.AppContext[]);
+	
+	SET appContextIndex = appContextIndex + 1;
+	
+	SET eventCorrelationRef.AppContext[appContextIndex].Name  = name;
+ 	SET eventCorrelationRef.AppContext[appContextIndex].Value = value;
+	
+END;
+
+-- divide the line length by 'divisor' and pad the remainder with spaces.
+CREATE PROCEDURE PadModSpaces(IN string CHARACTER, IN divisor INTEGER) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE stringLength INTEGER LENGTH(string);
+	DECLARE remainder INTEGER MOD(stringLength, divisor);
+	DECLARE extraSpaces INTEGER 0;
+	IF remainder > 0 THEN
+		SET  extraSpaces = divisor - remainder;
+	END IF;
+	RETURN (string || SPACE(extraSpaces)); -- pad out the remainder of the line.
+END;
+
+CREATE FUNCTION isNumeric(IN aValue CHARACTER) RETURNS BOOLEAN 
+BEGIN 
+	IF LENGTH(TRANSLATE(aValue, '0123456789', '')) <> 0 THEN 
+		RETURN FALSE; 
+	ELSE 
+		RETURN TRUE; 
+	END IF; 
+END;

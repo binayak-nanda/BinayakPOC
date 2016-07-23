@@ -1,0 +1,22 @@
+BROKER SCHEMA P3_M6_MQMB_HDMPROXY_PROJECT
+
+
+CREATE FILTER MODULE P3_TO_MOTIVE_RESPONSE_Filter
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN  
+	    DECLARE FIELDNAME CHARACTER;
+			SET FIELDNAME = Root.XMLNSC.P3CustomerInfo.ServiceInfo.RequestType;
+			
+		IF FIELDNAME = 'CreateModify' OR  FIELDNAME = 'DisconnectModify' THEN
+			RETURN FALSE;
+		END IF;
+		
+		
+		IF FIELDNAME = 'Create'        OR  FIELDNAME = 'Disconnect'  OR 
+		   FIELDNAME = 'CreateCascade' OR  FIELDNAME = 'DisconnectCascade' THEN
+			RETURN TRUE;
+		END IF;  
+				
+	END;
+
+END MODULE;

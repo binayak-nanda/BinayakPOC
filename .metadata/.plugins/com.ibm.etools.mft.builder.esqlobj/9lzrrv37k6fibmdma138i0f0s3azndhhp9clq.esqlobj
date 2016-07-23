@@ -1,0 +1,34 @@
+CREATE PROCEDURE UncompressFloodRfh2Usr(IN InputRoot REFERENCE) 
+BEGIN	
+
+	IF FIELDNAME (InputRoot.MQRFH2.usr.flat_QBESearchAddress) IS NOT NULL THEN 
+		CALL StringToXMLNSCFolder(InputRoot.MQRFH2.usr.flat_QBESearchAddress, InputRoot.MQRFH2.usr);
+		DELETE FIELD InputRoot.MQRFH2.usr.flat_QBESearchAddress;
+	END IF;
+
+	IF FIELDNAME (InputRoot.MQRFH2.usr.flat_PartnerSearchAddress1) IS NOT NULL THEN 
+		CALL StringToXMLNSCFolder(InputRoot.MQRFH2.usr.flat_PartnerSearchAddress1, InputRoot.MQRFH2.usr);
+		DELETE FIELD InputRoot.MQRFH2.usr.flat_PartnerSearchAddress1;
+	END IF;
+
+	IF FIELDNAME (InputRoot.MQRFH2.usr.flat_OriginalRequest) IS NOT NULL THEN 
+		CALL StringToXMLNSCFolder(InputRoot.MQRFH2.usr.flat_OriginalRequest, InputRoot.MQRFH2.usr);
+		DELETE FIELD InputRoot.MQRFH2.usr.flat_OriginalRequest;
+	END IF;
+
+	IF FIELDNAME (InputRoot.MQRFH2.usr.flat_LocationInfoValRetrieveResponse) IS NOT NULL THEN 
+		CALL StringToXMLNSCFolder(InputRoot.MQRFH2.usr.flat_LocationInfoValRetrieveResponse, InputRoot.MQRFH2.usr);
+		DELETE FIELD InputRoot.MQRFH2.usr.flat_LocationInfoValRetrieveResponse;
+	END IF;
+
+	IF FIELDNAME (InputRoot.MQRFH2.usr.flat_SARStructuredAddress) IS NOT NULL THEN 
+		CALL StringToXMLNSCFolder(InputRoot.MQRFH2.usr.flat_SARStructuredAddress, InputRoot.MQRFH2.usr);
+		DELETE FIELD InputRoot.MQRFH2.usr.flat_SARStructuredAddress;
+	END IF;
+
+	IF FIELDNAME (InputRoot.MQRFH2.usr.flat_ratingZone) IS NOT NULL THEN 
+		CALL StringToXMLNSCFolder(InputRoot.MQRFH2.usr.flat_ratingZone, InputRoot.MQRFH2.usr);
+		DELETE FIELD InputRoot.MQRFH2.usr.flat_ratingZone;
+	END IF;
+
+END;

@@ -1,0 +1,8 @@
+CREATE PROCEDURE getBoolValueInBooleanChar(IN bool BOOLEAN) RETURNS CHARACTER
+BEGIN		
+	IF bool THEN
+		RETURN 'true';  --Leave as lower case. Used for AON.
+	ELSE
+		RETURN 'false';
+	END IF;		
+END;

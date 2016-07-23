@@ -1,0 +1,18 @@
+CREATE FILTER MODULE BackoutCountTwo
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+	    IF ("Root"."MQMD"."BackoutCount" = 2) THEN
+			/*
+			 i.e. This is initial error message that has been caught.
+			*/
+			RETURN TRUE;
+		ELSE
+			-- Backout count is > 0 which means that this message has already been through the catch logic.
+			-- Do not log this error to the queue.
+			RETURN FALSE;
+		END IF;	
+		
+	END;
+
+END MODULE;

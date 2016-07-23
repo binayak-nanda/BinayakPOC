@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://EmployeeService" xmlns:Q1="http://sample/iibadmin" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:tns="http://EmployeeService">
+    <xsd:import namespace="http://sample/iibadmin" schemaLocation="sample/iibadmin/SAMPLE_EMPLOYEE.xsd"/>
+    <xsd:element ibmSchExtn:docRoot="true" name="getEmployee">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element ref="Q1:EMPLOYEE"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element ibmSchExtn:docRoot="true" name="getEmployeeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element ref="Q1:EmployeeResponse"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    <xsd:element ibmSchExtn:docRoot="true" name="updEmployee">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="Q1:EMPLOYEE"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+    <xsd:element ibmSchExtn:docRoot="true" name="updEmployeeResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="Q1:EmployeeResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

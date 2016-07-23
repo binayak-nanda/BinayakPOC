@@ -1,0 +1,7 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		
+	   RETURN ESBJMSCatchOutputLogicFlag; -- This is a UDP.
+		
+	END;
+

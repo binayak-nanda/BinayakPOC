@@ -1,0 +1,10 @@
+CREATE PROCEDURE TruncateToXDecimalPlaces(IN valueStr CHARACTER, IN numberOfDecimalPlaces INTEGER) RETURNS DECIMAL
+BEGIN	
+
+	DECLARE decimalValue DECIMAL CAST (valueStr AS DECIMAL);
+	
+	DECLARE truncatedDecimal DECIMAL ROUND (decimalValue, numberOfDecimalPlaces);
+	
+	RETURN truncatedDecimal;
+
+END;

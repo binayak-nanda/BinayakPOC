@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmFlowOrder.msgnode="ComIbmFlowOrder.msgnode" xmlns:ComIbmPassthru.msgnode="ComIbmPassthru.msgnode" xmlns:ESBLogFeeder.msgflow="ESBLogFeeder.msgflow" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="HTTPRequestFailure.msgflow"
+    nsPrefix="HTTPRequestFailure.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.ServiceName" name="ServiceName" defaultValueLiteral="[Set to service name]">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SetESBEventProperties.ESQLModule" name="SetESBEventProperties.ESQLModule" defaultValueLiteral="esql://routine/#ESBLogFeeder_DefaultESQLModule.Main">
+      <eType xmi:type="ecore:EDataType" href="http://www.ibm.com/wbi/2005/eflow#//EsqlModule"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="HTTPRequestFailure" bundleName="HTTPRequestFailure" pluginId="ESBCommonMsgFlowProj"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj16/HTTPRequestFailure.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj30/HTTPRequestFailure.gif"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="36,152">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="HTTPRequestFailure" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="ComIbmPassthru.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="104,152" label="$MQSI ESBHTTPRequest Failure Subflow Version=v0.1 MQSI$">
+        <translation xmi:type="utility:ConstantString" string="Passthrough"/>
+      </nodes>
+      <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="198,152">
+        <translation xmi:type="utility:ConstantString" string="FlowOrder"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="261,152" computeExpression="esql://routine/#MapHTTPRequestFailureToCommonEvent.Main" computeMode="destinationAndMessage" validateTiming="immediate">
+        <translation xmi:type="utility:ConstantString" string="Map HTTPRequest Failure to Common Event"/>
+      </nodes>
+      <nodes xmi:type="ESBLogFeeder.msgflow:FCMComposite_1" xmi:id="FCMComposite_1_5" location="490,148">
+        <translation xmi:type="utility:ConstantString" string="Call ESBLogFeeder"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="331,266">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Error Response" bundleName="HTTPRequestFailure" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_1" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.first" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.second" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.ServiceName">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.ServiceName" bundleName="HTTPRequestFailure" pluginId="ESBCommonMsgFlowProj"/>
+        <propertyDescriptor groupName="Group.Custom.Settings" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.EsqlModulePropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.EsqlModulePropertyCompiler" describedAttribute="Property.SetESBEventProperties.ESQLModule">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.SetESBEventProperties.ESQLModule" bundleName="ESBLogFeeder" pluginId="ESBCommonMsgFlowProj"/>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.SetESBEventProperties.ESQLModule" overriddenNodes="FCMComposite_1_5">
+      <overriddenAttribute href="ESBLogFeeder.msgflow#Property.SetESBEventProperties.ESQLModule"/>
+    </attributeLinks>
+  </eClassifiers>
+</ecore:EPackage>

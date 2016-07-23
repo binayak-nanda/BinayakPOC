@@ -1,0 +1,47 @@
+CREATE COMPUTE MODULE loadCache_Compute
+
+CREATE FUNCTION Main() RETURNS BOOLEAN
+BEGIN
+
+ CALL CopyEntireMessage();
+					
+ -- Declare a location to hold the data returned from the database service call
+ 
+ DECLARE dbResultSet ROW;
+ DECLARE dbResultSetRef REFERENCE TO dbResultSet;
+ Declare empno char;
+ DECLARE rowRef REFERENCE TO dbResultSetRef.row;
+ DECLARE CountdbRES INT; 	
+ DECLARE I INTEGER 1;
+       
+ -- Read all rows in dB: 
+    
+ SET dbResultSetRef.row[] = PASSTHRU (
+      'SELECT EMPNO, FIRSTNME, MIDINIT, LASTNAME, WORKDEPT, 
+	      PHONENO, HIREDATE, JOB, EDLEVEL, SEX, BIRTHDATE, SALARY, BONUS, COMM
+       FROM IIBADMIN.EMPLOYEE');
+			 
+ -- find the number of rows read:
+ 
+
+ SET CountdbRES = CARDINALITY(dbResultSetRef.row[]);
+ SET Environment.Variables.recordsAdded = 0;
+ 
+ -- Pass each row to a java program that will add the row to the cache:
+ WHILE I <= CountdbRES DO
+	  
+  CALL PutJAXB2CACHE(dbResultSetRef.row[I]);
+  SET I = I + 1;
+	 
+ END WHILE;
+        
+ RETURN TRUE;
+ END;
+		
+ CREATE PROCEDURE PutJAXB2CACHE(IN dBRow REFERENCE) LANGUAGE JAVA EXTERNAL NAME "com.ibm.betaworks.PutEmployee2Cache.evaluate";
+			 
+ 
+ CREATE PROCEDURE CopyEntireMessage() BEGIN
+	SET OutputRoot = InputRoot;
+	END;
+END MODULE;

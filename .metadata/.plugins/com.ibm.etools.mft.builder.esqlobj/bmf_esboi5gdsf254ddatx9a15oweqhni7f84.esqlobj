@@ -1,0 +1,31 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;		
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+        DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+        DECLARE payloadBlob BLOB '';
+        
+        DECLARE envRef REFERENCE TO Environment;
+        
+        CALL LoadProperties(envRef);
+        
+        SET Environment.Variables.QBE.ESBEvent.Event.Role = 'info';
+        
+        DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+        
+        CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+                
+		SET eventRef.MessageContext.MessageId             = '';
+		SET eventRef.MessageContext.CorrelationId         = InputLocalEnvironment.Destination.HTTP.RequestIdentifier;
+		SET eventRef.MessageContext.Destination.Transport = 'SOAP-HTTP';	
+		SET eventRef.MessageContext.Destination.Name      = InputLocalEnvironment.Destination.HTTP.RequestURL;
+		SET eventRef.MessageContext.Destination.Type      = 'HTTP Request Out';
+
+  	    /* Copy the message body if it exists. The body will be http response message */
+		
+		SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		
+		RETURN TRUE;
+	END;
+

@@ -1,0 +1,18 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		
+		DECLARE deliveryCount INT 0;
+		DECLARE replyResult BOOLEAN FALSE;
+		
+		SET deliveryCount = Root.JMSTransport.Transport_Folders.Standard_Properties.JMSXDeliveryCount;
+		
+		IF (ReplyOnCatchJMS AND (deliveryCount = 3)) THEN
+			SET replyResult = TRUE;
+		ELSE
+			SET replyResult = FALSE;
+		END IF;
+		
+		-- RETURN ReplyOnCatchJMS; -- This is a UDP.
+		RETURN replyResult;
+	END;
+

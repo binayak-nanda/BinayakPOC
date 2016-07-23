@@ -1,0 +1,16 @@
+CREATE PROCEDURE FileUtilGenXml(IN argOperation REFERENCE, IN argTrackingId REFERENCE, IN argDirectory REFERENCE, IN argFileName REFERENCE, IN argFileContent REFERENCE, INOUT argFileUtilXml REFERENCE) BEGIN
+		
+		SET argFileUtilXml.XMLNSC.FileUtil.(XMLNSC.NamespaceDecl)xsi:noNamespaceSchemaLocation = 'FileUtil.xsd';  
+		SET argFileUtilXml.XMLNSC.FileUtil.(XMLNSC.NamespaceDecl)xmlns:xsi  = 'http://www.w3.org/2001/XMLSchema-instance'; 
+		
+		SET argFileUtilXml.XMLNSC.FileUtil.Operation = argOperation;
+		SET argFileUtilXml.XMLNSC.FileUtil.TrackingId = argTrackingId;
+		SET argFileUtilXml.XMLNSC.FileUtil.Directory = argDirectory;
+		SET argFileUtilXml.XMLNSC.FileUtil.FileName = argFileName;
+		
+		IF argOperation = 'Write' THEN 
+			SET argFileUtilXml.XMLNSC.FileUtil.FileContent = argFileContent;
+		END IF;
+			
+		
+END;

@@ -1,0 +1,24 @@
+CREATE FUNCTION isValidDate(inDate INTEGER, fDateFormat CHARACTER) RETURNS DATE
+BEGIN
+
+	DECLARE fDate DATE;
+	IF (inDate = 0 or inDate = 99999999) THEN
+		SET fDate = NULL;
+	ELSE	
+		DECLARE pattern CHARACTER '00000000';
+		DECLARE charDate CHARACTER CAST(inDate AS CHARACTER FORMAT pattern);
+
+		DECLARE yearStr CHARACTER SUBSTRING(charDate from 1 FOR 4);
+
+		DECLARE yearInt INTEGER CAST (yearStr as INTEGER);
+
+		IF (yearInt <= 0) THEN
+			SET fDate = NULL;
+		ELSE
+			SET charDate = CAST(inDate AS CHARACTER);
+			SET fDate = CAST(charDate AS DATE FORMAT fDateFormat);
+		END IF;
+	END IF;
+
+	RETURN fDate;
+END;

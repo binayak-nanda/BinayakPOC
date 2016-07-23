@@ -1,0 +1,110 @@
+EmployeeServiceInterface>>RESTNODE>>REST>>0>>1452164890767
+2871<<Administration Result<<2016-01-07 16:38:29.240 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/EmployeeServiceInterfaceproject.generated.bar<<BAR<<REST<<ExecutionGroup<<COMPLETE
+EmployeeService_REST>>RESTNODE>>REST>>0>>1452164945176
+2871<<Administration Result<<2016-01-07 16:39:13.601 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/EmployeeService_RESTproject.generated.bar<<BAR<<REST<<ExecutionGroup<<COMPLETE
+test.bar>>TESTNODE_binapani>>default>>2>>1452338590248
+2087<<Runtime Response<<2016-01-09 16:53:46.757 IST<<TESTNODE_binapani<<d26bdc74-f1c1-4137-a213-89d98d6fb134
+4041<<Runtime Response<<2016-01-09 16:53:46.773 IST<<default<<ea6af00e-a8ac-4d55-bfc1-d150d9b683ca
+2683<<Runtime Response<<2016-01-09 16:53:46.775 IST<<PolicyManager
+2871<<Administration Result<<2016-01-09 16:53:46.775 IST<<binapani-PC\binapani<<deploy<<D:\AntBuild\BrokerBuild\test.bar<<BAR<<default<<ExecutionGroup<<FAILED
+HelloWorld>>TestNode>>default>>0>>1456998575928
+2871<<Administration Result<<2016-03-03 15:19:45.159 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/HelloWorldproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+HelloWorld>>TestNode>>TestServer>>0>>1457001218272
+2871<<Administration Result<<2016-03-03 16:03:43.589 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/HelloWorldproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+HelloWorld>>TestNode>>TestServer>>0>>1457003742891
+2871<<Administration Result<<2016-03-03 16:45:43.720 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/HelloWorldproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+TestServiceProvider>>TestNode>>TestServer>>0>>1457003763033
+2871<<Administration Result<<2016-03-03 16:46:04.626 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestServiceProviderproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+TestServiceProvider>>TestNode>>TestServer>>0>>1457003841717
+2871<<Administration Result<<2016-03-03 16:47:25.833 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestServiceProviderproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457004502951
+2871<<Administration Result<<2016-03-03 16:58:29.679 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457004700379
+2871<<Administration Result<<2016-03-03 17:01:46.945 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestServiceProvider>>TestNode>>TestServer>>0>>1457004719693
+2871<<Administration Result<<2016-03-03 17:02:02.431 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestServiceProviderproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457005052019
+2871<<Administration Result<<2016-03-03 17:07:36.071 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestServiceProvider>>TestNode>>TestServer>>0>>1457005074999
+2871<<Administration Result<<2016-03-03 17:07:57.844 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestServiceProviderproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457005237670
+2871<<Administration Result<<2016-03-03 17:10:38.837 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457005246512
+2871<<Administration Result<<2016-03-03 17:10:49.535 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+HelloWorld>>TestClient>>TestClient>>0>>1457005756105
+2871<<Administration Result<<2016-03-03 17:19:17.334 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/HelloWorldproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457005971072
+2871<<Administration Result<<2016-03-03 17:22:52.271 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457006403822
+2871<<Administration Result<<2016-03-03 17:30:06.762 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestServiceProvider>>TestNode>>TestServer>>0>>1457007187992
+2871<<Administration Result<<2016-03-03 17:43:11.627 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestServiceProviderproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+TestClient>>TestClient>>TestClient>>0>>1457007216267
+2871<<Administration Result<<2016-03-03 17:43:41.160 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestClientproject.generated.bar<<BAR<<TestClient<<ExecutionGroup<<COMPLETE
+TestServiceProvider>>TestNode>>TestServer>>0>>1457007402665
+2871<<Administration Result<<2016-03-03 17:46:45.882 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/TestServiceProviderproject.generated.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+CacheLib.bar>>TestNode>>TestServer>>2>>1457067840455
+2087<<Runtime Response<<2016-03-04 10:34:02.705 IST<<TestNode<<122a822a-5cc5-4b7c-84f9-d4290d739737
+4041<<Runtime Response<<2016-03-04 10:34:02.705 IST<<TestServer<<ce97c8c3-9fa1-4446-bd8b-a0a427ed1304
+2683<<Runtime Response<<2016-03-04 10:34:02.706 IST<<PolicyManager
+2871<<Administration Result<<2016-03-04 10:34:02.706 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/CacheLib/CacheLib.bar<<BAR<<TestServer<<ExecutionGroup<<FAILED
+CacheLib.bar>>TestNode>>TestServer>>0>>1457068073646
+2871<<Administration Result<<2016-03-04 10:37:54.973 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/CacheLib/CacheLib.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+CacheLib.bar>>TestNode>>TestServer>>0>>1457068736245
+2871<<Administration Result<<2016-03-04 10:48:59.806 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/CacheLib/CacheLib.bar<<BAR<<TestServer<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460051534178
+2871<<Administration Result<<2016-04-07 23:22:22.535 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460052352971
+2871<<Administration Result<<2016-04-07 23:35:54.301 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460088488859
+2871<<Administration Result<<2016-04-08 09:38:10.066 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460088906390
+2871<<Administration Result<<2016-04-08 09:45:07.653 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460089004760
+2871<<Administration Result<<2016-04-08 09:46:46.289 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460089475447
+2871<<Administration Result<<2016-04-08 09:54:37.514 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460089944791
+2871<<Administration Result<<2016-04-08 10:02:28.958 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460098734045
+2871<<Administration Result<<2016-04-08 12:28:55.568 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460099660245
+2871<<Administration Result<<2016-04-08 12:44:22.094 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460101097409
+2871<<Administration Result<<2016-04-08 13:08:22.139 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460101218274
+2871<<Administration Result<<2016-04-08 13:10:19.881 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460102072218
+2871<<Administration Result<<2016-04-08 13:24:34.320 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460102205963
+2871<<Administration Result<<2016-04-08 13:26:48.064 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460103551052
+2871<<Administration Result<<2016-04-08 13:49:13.792 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460103661565
+2871<<Administration Result<<2016-04-08 13:51:03.879 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460104006640
+2871<<Administration Result<<2016-04-08 13:56:48.370 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460104207678
+2871<<Administration Result<<2016-04-08 14:00:10.190 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460104298718
+2871<<Administration Result<<2016-04-08 14:01:40.977 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460104313974
+2871<<Administration Result<<2016-04-08 14:01:57.112 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460104490677
+2871<<Administration Result<<2016-04-08 14:04:53.695 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460104628606
+2871<<Administration Result<<2016-04-08 14:07:11.205 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460105109200
+2871<<Administration Result<<2016-04-08 14:15:11.539 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460105368170
+2871<<Administration Result<<2016-04-08 14:19:30.986 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+RESTSampleTest>>TESTNODE_binapani>>default>>0>>1460105516548
+2871<<Administration Result<<2016-04-08 14:21:59.354 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/RESTSampleTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+EmailNodesTest>>TESTNODE_binapani>>default>>0>>1460111715588
+2871<<Administration Result<<2016-04-08 16:05:16.566 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/EmailNodesTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+EmailNodesTest>>TESTNODE_binapani>>default>>0>>1460113705741
+2871<<Administration Result<<2016-04-08 16:38:27.916 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/EmailNodesTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+EmailNodesTest>>TESTNODE_binapani>>default>>0>>1460114605568
+2871<<Administration Result<<2016-04-08 16:53:27.216 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/EmailNodesTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE
+EmailNodesTest>>TESTNODE_binapani>>default>>0>>1460114662198
+2871<<Administration Result<<2016-04-08 16:54:23.837 IST<<binapani-PC\binapani<<deploy<<E:/IIBT10/workspace/GeneratedBarFiles/EmailNodesTestproject.generated.bar<<BAR<<default<<ExecutionGroup<<COMPLETE

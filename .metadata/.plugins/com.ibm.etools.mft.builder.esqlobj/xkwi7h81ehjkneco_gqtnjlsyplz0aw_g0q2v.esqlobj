@@ -1,0 +1,10 @@
+CREATE PROCEDURE GetPolicyNumber(IN number REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF number IS NULL OR LENGTH(number) < 7 OR LENGTH(number) > 7 THEN
+		SET number = '       ';
+	END IF;
+	
+	RETURN number;
+
+END;

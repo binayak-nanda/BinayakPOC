@@ -1,0 +1,21 @@
+CREATE FUNCTION ConvertNumberToStringDate(IN integerDate INTEGER, IN dateLength INTEGER) RETURNS CHARACTER
+BEGIN	
+	DECLARE stringDate CHARACTER '';	
+	DECLARE strDate CHARACTER CAST (integerDate as CHARACTER);
+	--getEVOLVE_DATE_LENGTH()
+	IF strDate IS NOT NULL AND LENGTH(strDate) >= dateLength THEN
+		
+		DECLARE dayStr CHAR;
+		DECLARE monthStr CHAR;
+		DECLARE yearStr CHAR;
+				
+		SET yearStr = SUBSTRING(strDate FROM getEVOLVE_YEAR_START() FOR getYEAR_LENGTH());
+		SET monthStr = SUBSTRING(strDate FROM getEVOLVE_MONTH_START() FOR getMONTH_LENGTH());
+		SET dayStr = SUBSTRING(strDate FROM getEVOLVE_DAY_START() FOR getDAY_LENGTH());
+		
+		SET stringDate = yearStr || '-' || monthStr || '-' || dayStr;
+		
+	END IF;
+	
+	RETURN stringDate;	
+END;

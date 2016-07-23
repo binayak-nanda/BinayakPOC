@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><launchConfiguration type="com.ibm.etools.mft.debug.internal.mbLaunchConfigurationDelegate">
+<stringAttribute key="BRName" value="RESTNODE"/>
+<stringAttribute key="ConnectionInfo" value=""/>
+<stringAttribute key="EGName" value="REST"/>
+<stringAttribute key="com.ibm.etools.mft.debug.attr_hostname" value="binapani-PC"/>
+<stringAttribute key="com.ibm.etools.mft.debug.attr_javaportname" value="12321"/>
+</launchConfiguration>

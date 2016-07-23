@@ -1,0 +1,19 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+	
+	    IF ("Root"."MQMD"."BackoutCount" < 3) THEN
+			/*
+			 i.e. message did not exceed the backout count as expected by the flow.
+			 Backout count on the queue should have been set to 3 and hence if the
+			 queue is configured correctly when the msg hits this point the backout
+			 count on the MQMD should NOT be less than 3
+			*/
+			RETURN FALSE;
+		ELSE
+			-- Backout count is >= 3 which is okay as the message will have been written
+			-- to exception down the catch path
+			RETURN TRUE;
+		END IF;	
+		
+	END;
+

@@ -1,0 +1,18 @@
+CREATE PROCEDURE getBooleanValueInChar(IN value CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR value;
+	
+	IF value IS NULL THEN
+		SET bool = NULL;
+	ELSE 
+		IF UPPER(value) = 'FALSE' OR UPPER(value) = 'F' OR UPPER(value) = 'NO' OR UPPER(value) = 'N' THEN
+			SET bool = 'N';
+		ELSE 
+			IF UPPER(value) = 'TRUE' OR UPPER(value) = 'T' OR UPPER(value) = 'YES' OR UPPER(value) = 'Y' THEN
+				SET bool = 'Y';
+			END IF;
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;

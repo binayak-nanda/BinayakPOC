@@ -1,0 +1,8 @@
+CREATE PROCEDURE SetMessagePropertiesInESBEvent(IN pRootRef REFERENCE, IN pESBEvent REFERENCE) 
+BEGIN
+		
+	SET pESBEvent.MessageContext.MessageSet    = pRootRef.Properties.MessageSet;
+	SET pESBEvent.MessageContext.MessageType   = pRootRef.Properties.MessageType;
+    SET pESBEvent.MessageContext.MessageFormat = pRootRef.Properties.MessageFormat;
+		
+END;

@@ -1,0 +1,11 @@
+CREATE COMPUTE MODULE ESBHTTPCatch_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+  		LOG EVENT MESSAGE 2952 VALUES('System Exception on Request ID: '||InputLocalEnvironment.Destination.HTTP.RequestIdentifier);
+		THROW USER EXCEPTION VALUES('System Exception on Request ID: '||InputLocalEnvironment.Destination.HTTP.RequestIdentifier);
+		RETURN TRUE;
+	END;
+
+END MODULE;

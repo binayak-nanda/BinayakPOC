@@ -1,0 +1,10 @@
+CREATE PROCEDURE GetPolicyKey(IN policyKeyRef REFERENCE) RETURNS CHARACTER
+BEGIN	
+	DECLARE policyKey CHARACTER NULL;
+	
+	SET policyKey =  GetPolicyBranch(policyKeyRef.qbe:Branch) ||
+			GetPolicyNumber(policyKeyRef.qbe:Policy) ||			
+			GetPolicyProduct(policyKeyRef.qbe:Type);
+	
+	RETURN policyKey;	
+END;

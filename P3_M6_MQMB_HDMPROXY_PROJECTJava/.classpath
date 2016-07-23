@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="JCN_HOME/javacompute.jar"/>
+	<classpathentry kind="var" path="JCN_HOME/jplugin2.jar"/>
+	<classpathentry kind="con" path="com.ibm.etools.mft.uri.classpath.MBProjectReference"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/bootstrap.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/com.ibm.wps.runtime_6.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/com.ibm.ws.admin.client_6.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/com.ibm.ws.webservices.thinclient_6.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/ibmorb.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/lmproxy.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/naming.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/namingclient.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/namingserver.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/sibc.jms.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/sibc.jndi.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/urlprotocols.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/weblogic.jar"/>
+	<classpathentry kind="lib" path="C:/ABHIJEET/Projects/BSNL_Broker/websphere jars/ws_runtime.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

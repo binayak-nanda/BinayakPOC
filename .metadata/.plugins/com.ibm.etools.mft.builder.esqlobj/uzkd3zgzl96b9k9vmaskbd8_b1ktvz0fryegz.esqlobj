@@ -1,0 +1,36 @@
+CREATE COMPUTE MODULE ESBLogFeeder_DefaultESQLModule
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+		-- The ESQL module that you create is used to set the log point and map the desired values to the ESBEvent structure.
+--		## DECLARE envRef       REFERENCE TO Environment;
+--		## DECLARE inputRootRef REFERENCE TO InputRoot;
+--		## DECLARE eventRef     REFERENCE TO envRef.ESBEvent.Event;
+-- 
+--      ## CALL SetLogPoint(eventRef, 'main:start');
+--
+--      ## -- This procedure sets the target message properties.
+--      ## CALL SetMessagePropertiesInESBEvent(inputRootRef, eventRef);
+--
+--		## -- This procedure sets the target destination properties.
+--	    ## CALL SetDestinationPropertiesInESBEvent(eventRef, 'jms', 'qbe:pega', InputRoot.JMSTransport.Transport_Folders.Header_Values.JMSReplyTo, 'queue'); 		
+	    
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

@@ -1,0 +1,11 @@
+CREATE PROCEDURE FormatIntegerAsDollar(IN value INTEGER) 
+RETURNS CHARACTER
+BEGIN
+	
+	DECLARE dollarFormat CHARACTER '';
+	
+	DECLARE pattern CHARACTER '$###,###,###';
+	SET dollarFormat = CAST(value AS CHARACTER FORMAT pattern);
+	
+	RETURN dollarFormat;	
+END;

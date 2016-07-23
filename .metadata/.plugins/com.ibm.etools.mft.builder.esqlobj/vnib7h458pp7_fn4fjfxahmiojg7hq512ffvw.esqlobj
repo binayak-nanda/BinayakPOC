@@ -1,0 +1,43 @@
+CREATE PROCEDURE createRfh2JmsString3(IN envRef REFERENCE, 
+									IN requestType CHARACTER, 
+									IN trackingId CHARACTER,
+									IN alternateReferenceId CHARACTER, 
+									IN origApp CHARACTER, 
+									IN userId CHARACTER,
+									IN httpId CHARACTER,
+									IN qegReplyToQ CHARACTER,
+									IN headerMessageId CHARACTER) RETURNS CHARACTER
+									
+BEGIN
+		
+	DECLARE rfh2JmsStr CHARACTER;
+		
+	SET rfh2JmsStr  = SOURCE__MSG_ID ||'=' || envRef.Variables.Properties.JMSMessageID || ',' ||
+		                                              SOURCE__RESPONSE_Q || '=' || envRef.Variables.Properties.JMSReplyTo || ',' ||
+		                                              SOURCE__REQUEST_TYPE || '=' || requestType || ',' ||
+		                                              SOURCE__TRACKING_ID || '=' || trackingId || ',' ||
+		                                              ORIG_APP || '=' || origApp; 
+
+	IF LENGTH(alternateReferenceId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__ALT_REF_ID || '=' || alternateReferenceId;
+	END IF;
+
+	IF LENGTH(userId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__USER_ID || '=' || userId;
+	END IF;
+	
+	IF LENGTH(headerMessageId) > 0 THEN
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__HDR_MSG_ID || '=' || headerMessageId; 
+	END IF;
+	
+	IF LENGTH(httpId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__HTTP_ID || '=' || httpId;
+	END IF;
+
+	IF LENGTH(qegReplyToQ) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__QEG_RS_Q || '=' || qegReplyToQ;
+	END IF;
+
+		                		               		                                              		                                              
+	RETURN rfh2JmsStr;			
+END;

@@ -1,0 +1,28 @@
+CREATE PROCEDURE extractJmsPropsFromRrfh2(IN envRef REFERENCE, IN rfh2Str CHARACTER)
+BEGIN
+		
+	DECLARE jmsMessageId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__MSG_ID);
+	DECLARE jmsReplyTo CHARACTER GetPropertyFromList(rfh2Str, SOURCE__RESPONSE_Q);
+	DECLARE requestType CHARACTER GetPropertyFromList(rfh2Str, SOURCE__REQUEST_TYPE);
+	DECLARE trackingId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__TRACKING_ID);
+	DECLARE origApp CHARACTER GetPropertyFromList(rfh2Str, ORIG_APP);
+	DECLARE httpId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__HTTP_ID);
+	DECLARE qegReplyToQ CHARACTER GetPropertyFromList(rfh2Str, SOURCE__QEG_RS_Q);
+	
+	DECLARE alternateReferenceId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__ALT_REF_ID);
+	DECLARE userId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__USER_ID);
+	DECLARE headerMessageId CHARACTER GetPropertyFromList(rfh2Str, SOURCE__HDR_MSG_ID);
+			
+	-- Store MessageID and ReplyTo in environment to be inserted into the Evolve.SRXESB header.
+	SET envRef.Variables.Properties.JMSMessageID = jmsMessageId;
+	SET envRef.Variables.Properties.JMSReplyTo = jmsReplyTo;
+	SET envRef.Variables.Properties.requestType = requestType;
+	SET envRef.Variables.Properties.trackingId = trackingId;
+	SET envRef.Variables.Properties.origApp = origApp;
+	SET envRef.Variables.Properties.httpId = httpId;
+	SET envRef.Variables.Properties.qegReplyToQ = qegReplyToQ;
+	SET envRef.Variables.Properties.alternateReferenceNumber = alternateReferenceId;
+	SET envRef.Variables.Properties.userId = userId;
+	SET envRef.Variables.Properties.headerMessageId = headerMessageId;
+				
+END;

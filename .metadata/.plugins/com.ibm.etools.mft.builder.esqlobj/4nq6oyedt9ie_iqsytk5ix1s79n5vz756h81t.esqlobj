@@ -1,0 +1,18 @@
+CREATE FUNCTION ConvertStringDateDD_MM_YYYY_2_StringYYYY_MM_DD(IN inDate CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE convertedDate CHARACTER '';
+	
+	IF LENGTH(inDate) >= 10 THEN
+		DECLARE dayStr CHAR;
+		DECLARE monthStr CHAR;
+		DECLARE yearStr CHAR;
+				
+		SET dayStr = SUBSTRING(inDate FROM 1 FOR 2);
+		SET monthStr = SUBSTRING(inDate FROM 4 FOR 2);
+		SET yearStr = SUBSTRING(inDate FROM 7 FOR 4);
+		
+		SET convertedDate = yearStr || '-' || monthStr || '-' || dayStr;
+	END IF;
+	
+	RETURN convertedDate; 
+END;

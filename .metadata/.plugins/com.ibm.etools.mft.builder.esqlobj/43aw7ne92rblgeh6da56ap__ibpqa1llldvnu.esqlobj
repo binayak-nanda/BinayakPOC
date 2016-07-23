@@ -1,0 +1,20 @@
+CREATE FILTER MODULE IsDeliveryCount3
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE deliveryCount INT 0;
+		DECLARE outputResult BOOLEAN FALSE;
+		
+		SET deliveryCount = Root.JMSTransport.Transport_Folders.Standard_Properties.JMSXDeliveryCount;
+		
+		IF (deliveryCount = 3) THEN
+			SET outputResult = TRUE;
+		ELSE
+			SET outputResult = FALSE;
+		END IF;
+		
+		
+		RETURN outputResult;
+	END;
+
+END MODULE;

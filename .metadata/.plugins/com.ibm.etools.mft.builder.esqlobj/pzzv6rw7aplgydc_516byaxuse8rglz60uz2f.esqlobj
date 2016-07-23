@@ -1,0 +1,16 @@
+CREATE PROCEDURE FixTree(IN node REFERENCE)
+BEGIN
+	MOVE node FIRSTCHILD;
+	IF LASTMOVE(node) THEN
+		-- loop over children
+		WHILE LASTMOVE(node) DO
+			CALL FixTree(node);
+			MOVE node NEXTSIBLING;
+		END WHILE;
+	ELSE
+		-- still on the current node, which has no children
+		IF FIELDTYPE(node) = Name THEN
+			SET node VALUE = '';
+		END IF;
+	END IF;
+END;

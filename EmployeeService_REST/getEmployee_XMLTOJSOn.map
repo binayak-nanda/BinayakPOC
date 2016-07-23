@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><mappingRoot xmlns="http://www.ibm.com/2008/ccl/Mapping" domainID="com.ibm.msl.mapping.xml" domainIDExtension="mb" mainMap="true" targetNamespace="default" version="8.0.5.0" xmlns:map="default">
+    <input path="mbsharedlib://EmployeeServiceInterface/sample/iibadmin/SAMPLE_EMPLOYEE.xsd"/>
+    <output path="jar:file://!com/ibm/etools/mft/map/xsds/predefined/JsonDomainMsg.xsd" var="var"/>
+    <namespaces>
+        <namespace kind="supplement" prefix="in" uri="http://sample/iibadmin"/>
+        <namespace kind="supplement" prefix="out" uri="http://www.ibm.com/iib/msl/json"/>
+    </namespaces>
+    <generation engine="xquery"/>
+    <mappingDeclaration name="getEmployee_XMLTOJSOn">
+        <input namespace="http://sample/iibadmin" path="mb:msg(EmployeeResponse,assembly,XMLNSC,Properties)" var="ComIbmMessageAssembly_EmployeeResponse"/>
+        <output namespace="http://www.ibm.com/iib/msl/json" path="$var/mb:msg(JSON,assembly,JSON,Properties)" var="ComIbmMessageAssembly_JSON">
+            <cast castType="userDefined" path="$ComIbmMessageAssembly_JSON/JSON/Data/type('anyType')" qualifier="{http://www.ibm.com/iib/msl/json}JSONObject" ref="var"/>
+            <cast path="$ComIbmMessageAssembly_JSON/JSON/spath('Data',2)/any" qualifier="{http://sample/iibadmin}EmployeeResponse"/>
+        </output>
+        <move>
+            <input path="$ComIbmMessageAssembly_EmployeeResponse/Properties"/>
+            <output path="$ComIbmMessageAssembly_JSON/Properties"/>
+            <override>
+                <assign value="">
+                    <output path="$ComIbmMessageAssembly_JSON/Properties/MessageSet"/>
+                </assign>
+                <assign value="">
+                    <output path="$ComIbmMessageAssembly_JSON/Properties/MessageType"/>
+                </assign>
+                <assign value="">
+                    <output path="$ComIbmMessageAssembly_JSON/Properties/MessageFormat"/>
+                </assign>
+            </override>
+        </move>
+        <local>
+            <input path="$ComIbmMessageAssembly_EmployeeResponse/EmployeeResponse"/>
+            <output path="$ComIbmMessageAssembly_JSON/JSON/spath('Data',2)/EmployeeResponse"/>
+            <move automap="true">
+                <input path="DBResp/UserReturnCode"/>
+                <output path="DBResp/UserReturnCode"/>
+            </move>
+            <move automap="true">
+                <input path="DBResp/RowsRetrieved"/>
+                <output path="DBResp/RowsRetrieved"/>
+            </move>
+            <move automap="true">
+                <input path="DBResp/RowsAdded"/>
+                <output path="DBResp/RowsAdded"/>
+            </move>
+            <move automap="true">
+                <input path="DBResp/RowsUpdated"/>
+                <output path="DBResp/RowsUpdated"/>
+            </move>
+            <move automap="true">
+                <input path="DBResp/RowsDeleted"/>
+                <output path="DBResp/RowsDeleted"/>
+            </move>
+            <move automap="true">
+                <input path="DBResp/SQLCode_ErrorCode"/>
+                <output path="DBResp/SQLCode_ErrorCode"/>
+            </move>
+            <move automap="true">
+                <input path="DBResp/SQLState_SQLState"/>
+                <output path="DBResp/SQLState_SQLState"/>
+            </move>
+            <move automap="true">
+                <input path="DBResp/SQL_Error_Message"/>
+                <output path="DBResp/SQL_Error_Message"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/EMPNO"/>
+                <output path="EMPLOYEE/EMPNO"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/FIRSTNME"/>
+                <output path="EMPLOYEE/FIRSTNME"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/MIDINIT"/>
+                <output path="EMPLOYEE/MIDINIT"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/LASTNAME"/>
+                <output path="EMPLOYEE/LASTNAME"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/WORKDEPT"/>
+                <output path="EMPLOYEE/WORKDEPT"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/PHONENO"/>
+                <output path="EMPLOYEE/PHONENO"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/HIREDATE"/>
+                <output path="EMPLOYEE/HIREDATE"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/JOB"/>
+                <output path="EMPLOYEE/JOB"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/EDLEVEL"/>
+                <output path="EMPLOYEE/EDLEVEL"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/SEX"/>
+                <output path="EMPLOYEE/SEX"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/BIRTHDATE"/>
+                <output path="EMPLOYEE/BIRTHDATE"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/SALARY"/>
+                <output path="EMPLOYEE/SALARY"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/BONUS"/>
+                <output path="EMPLOYEE/BONUS"/>
+            </move>
+            <move automap="true">
+                <input path="EMPLOYEE/COMM"/>
+                <output path="EMPLOYEE/COMM"/>
+            </move>
+        </local>
+    </mappingDeclaration>
+</mappingRoot>

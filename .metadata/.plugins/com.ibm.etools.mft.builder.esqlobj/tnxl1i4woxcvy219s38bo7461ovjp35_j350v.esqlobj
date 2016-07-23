@@ -1,0 +1,10 @@
+CREATE PROCEDURE getCacheValue(IN chrMapName CHARACTER, IN chrKey CHARACTER) RETURNS CHARACTER
+BEGIN
+
+	DECLARE chrResult CHARACTER;
+	SET chrResult = getCacheValueFromWXS(chrMapName,chrKey);
+	IF (TRIM(chrResult) IS NULL OR TRIM(chrResult) ='' ) THEN
+		THROW USER EXCEPTION MESSAGE 2999 VALUES('Failed to retrieve cache') ;
+	END IF;
+	RETURN chrResult;
+END;

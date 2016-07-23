@@ -1,0 +1,9 @@
+CREATE FILTER MODULE ESBJMSCatchOutputLogicRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+	   RETURN ESBJMSCatchOutputLogicFlag; -- This is a UDP.
+		
+	END;
+
+END MODULE;

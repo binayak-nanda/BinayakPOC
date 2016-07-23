@@ -1,0 +1,20 @@
+CREATE FILTER MODULE ESBJMSCatchReplyRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE deliveryCount INT 0;
+		DECLARE replyResult BOOLEAN FALSE;
+		
+		SET deliveryCount = Root.JMSTransport.Transport_Folders.Standard_Properties.JMSXDeliveryCount;
+		
+		IF (ReplyOnCatchJMS AND (deliveryCount = 3)) THEN
+			SET replyResult = TRUE;
+		ELSE
+			SET replyResult = FALSE;
+		END IF;
+		
+		-- RETURN ReplyOnCatchJMS; -- This is a UDP.
+		RETURN replyResult;
+	END;
+
+END MODULE;

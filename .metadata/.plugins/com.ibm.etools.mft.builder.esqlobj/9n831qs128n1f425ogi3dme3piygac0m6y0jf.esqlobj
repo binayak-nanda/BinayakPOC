@@ -1,0 +1,9 @@
+CREATE FUNCTION FormatDecimalNumber(IN number CHARACTER, IN pattern CHARACTER) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE decimalNumber DECIMAL CAST(number AS DECIMAL DEFAULT 0.0);
+	
+    DECLARE formattedNumber CHARACTER CAST(decimalNumber AS CHARACTER FORMAT pattern);
+
+	RETURN formattedNumber;
+END;

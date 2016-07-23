@@ -1,0 +1,8 @@
+CREATE COMPUTE MODULE ESBHTTPInput_DefaultESQLModule
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+	RETURN TRUE;
+	END;
+END MODULE;

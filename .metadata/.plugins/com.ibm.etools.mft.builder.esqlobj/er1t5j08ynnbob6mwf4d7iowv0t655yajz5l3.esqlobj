@@ -1,0 +1,19 @@
+CREATE FUNCTION GetXrefCode(IN codeType CHAR, IN sourceSystemCode CHAR, IN sourceCode CHAR, IN destinationSystemCode CHAR) RETURNS CHAR
+BEGIN
+	DECLARE sqlQuery CHARACTER;
+	DECLARE destinationCode CHARACTER '';
+
+	DECLARE searchResultRef ROW;
+
+	SET sqlQuery = 	'select DESTINATION_CDE from TGE_CODE_XREF 
+		WHERE CODE_TYP=? AND SRCE_SYS_CDE=? AND SOURCE_CDE=? AND DEST_SYS_CDE=?' ;
+						
+	SET searchResultRef.DbResult = 
+		PASSTHRU (sqlQuery VALUES(codeType, sourceSystemCode, sourceCode, destinationSystemCode));
+				
+	IF 	CARDINALITY (searchResultRef.DbResult[])> 0 THEN
+		SET destinationCode = searchResultRef.DbResult.DESTINATION_CDE;
+	END IF;
+	
+	RETURN TRIM(destinationCode);
+END;

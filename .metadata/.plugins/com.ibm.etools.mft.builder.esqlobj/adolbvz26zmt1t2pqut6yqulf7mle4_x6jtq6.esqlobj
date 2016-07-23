@@ -1,0 +1,16 @@
+CREATE PROCEDURE getBooleanValueAsZeroOne(IN value BOOLEAN) RETURNS INTEGER
+BEGIN
+	DECLARE bool INTEGER 0;
+	
+	IF value IS NULL THEN
+		SET bool = 0;
+	ELSE 
+		IF value = TRUE THEN
+			SET bool = 1;
+		ELSE 
+			SET bool = 0;
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;

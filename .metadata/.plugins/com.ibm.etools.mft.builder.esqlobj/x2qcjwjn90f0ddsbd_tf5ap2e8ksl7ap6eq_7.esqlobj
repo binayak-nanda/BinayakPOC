@@ -1,0 +1,20 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+	
+		DECLARE envRef REFERENCE TO Environment;
+		DECLARE sysVars REFERENCE TO envRef.ENV;
+		DECLARE mbVars REFERENCE TO envRef.ENV.MB;
+	
+	    IF ((CARDINALITY(sysVars.*[]) > 0) AND (CARDINALITY(mbVars.*[]) > 0)) THEN
+	    	
+			/*
+			 i.e. The GetEnv node has already been called. No need to call again.
+			*/
+			RETURN TRUE;
+		ELSE
+			-- GetEnv node has not been called. Need to call to get Environment details.
+			RETURN FALSE;
+		END IF;	
+		
+	END;
+

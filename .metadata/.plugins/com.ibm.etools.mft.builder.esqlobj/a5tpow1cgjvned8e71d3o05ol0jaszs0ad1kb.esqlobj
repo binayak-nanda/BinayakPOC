@@ -1,0 +1,18 @@
+CREATE PROCEDURE createRfh2JmsString(IN envRef REFERENCE, 
+									IN requestType CHARACTER, 
+									IN trackingId CHARACTER, 
+									IN origApp CHARACTER, 
+									IN iamUserId CHARACTER) RETURNS CHARACTER																										
+BEGIN
+	
+	DECLARE httpId CHARACTER '';
+	DECLARE qegReplyToQ CHARACTER '';
+	
+	RETURN createRfh2JmsString2(envRef, 
+								requestType, 
+								trackingId, 
+								origApp, 
+								iamUserId,
+								httpId,
+								qegReplyToQ);
+END;

@@ -1,0 +1,11 @@
+CREATE PROCEDURE PadModSpaces(IN string CHARACTER, IN divisor INTEGER) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE stringLength INTEGER LENGTH(string);
+	DECLARE remainder INTEGER MOD(stringLength, divisor);
+	DECLARE extraSpaces INTEGER 0;
+	IF remainder > 0 THEN
+		SET  extraSpaces = divisor - remainder;
+	END IF;
+	RETURN (string || SPACE(extraSpaces)); -- pad out the remainder of the line.
+END;

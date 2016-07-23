@@ -1,0 +1,24 @@
+CREATE FUNCTION PadZeros(IN Element CHARACTER, IN LengthOfElement INTEGER, IN DefaultValue CHARACTER, IN includePlusSign BOOLEAN) RETURNS CHARACTER
+BEGIN
+	
+    DECLARE PaddedElement CHARACTER '';
+    DECLARE pSign INTEGER POSITION('+' IN Element);
+
+    IF pSign > 0 THEN
+    	SET Element = REPLACE(Element, '+', '');
+    END IF;
+    
+    IF CAST(Element AS INTEGER) >= 0 THEN 
+    	IF includePlusSign THEN
+			SET PaddedElement = COALESCE('+' || REPLACE(SPACE((LengthOfElement-1)-LENGTH(Element)), ' ','0') ||Element, DefaultValue);
+    	ELSE
+			SET PaddedElement = COALESCE(REPLACE(SPACE((LengthOfElement)-LENGTH(Element)), ' ','0') ||Element, DefaultValue);
+    	END IF;
+	ELSE
+		SET PaddedElement = COALESCE('-' || REPLACE(SPACE((LengthOfElement)-LENGTH(Element)), ' ','0') ||REPLACE(Element, '-', ''), DefaultValue);
+	END IF;   
+
+	RETURN PaddedElement;
+	
+
+END;

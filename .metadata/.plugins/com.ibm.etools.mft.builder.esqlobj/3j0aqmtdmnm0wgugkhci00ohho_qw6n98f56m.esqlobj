@@ -1,0 +1,12 @@
+CREATE PROCEDURE ZeroIntegerIfNull(IN data CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE numZero CHARACTER '0';
+		
+	IF data IS NOT NULL THEN
+		IF data <> '' THEN
+			SET numZero = data;
+		END IF;
+	END IF;
+	
+	RETURN numZero;	
+END;

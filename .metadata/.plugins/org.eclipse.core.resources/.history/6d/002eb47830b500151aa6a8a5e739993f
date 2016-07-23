@@ -1,0 +1,69 @@
+
+
+CREATE COMPUTE MODULE MapHTTPRequestOutToCommonEvent
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;		
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+        DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+        DECLARE payloadBlob BLOB '';
+        
+        DECLARE envRef REFERENCE TO Environment;
+        
+        CALL LoadProperties(envRef);
+        
+        SET Environment.Variables.QBE.ESBEvent.Event.Role = 'info';
+        
+        DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+        
+        CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+                
+		SET eventRef.MessageContext.MessageId             = '';
+		SET eventRef.MessageContext.CorrelationId         = InputLocalEnvironment.Destination.HTTP.RequestIdentifier;
+		SET eventRef.MessageContext.Destination.Transport = 'SOAP-HTTP';	
+		SET eventRef.MessageContext.Destination.Name      = InputLocalEnvironment.Destination.HTTP.RequestURL;
+		SET eventRef.MessageContext.Destination.Type      = 'HTTP Request Out';
+
+  	    /* Copy the message body if it exists. The body will be http response message */
+		
+		SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		
+		RETURN TRUE;
+	END;
+
+END MODULE;
+
+
+CREATE COMPUTE MODULE ESBHTTPRequest_DefaultESQLModule
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;	
+		RETURN TRUE;
+	END;
+END MODULE;
+
+
+CREATE COMPUTE MODULE ESBHTTPRequest_HTTPErrorFilter
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputLocalEnvironment = InputLocalEnvironment;	
+		IF InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code" = 500 THEN
+			SET OutputRoot = InputRoot;	
+			PROPAGATE TO TERMINAL 'out1' ;
+			RETURN FALSE;
+		ELSE
+			DECLARE errorMessage CHARACTER;
+	    	DECLARE statusCode INTEGER;
+			SET OutputRoot.Properties = InputRoot.Properties;
+	    	SET OutputRoot.Properties.CodedCharSetId = 1208;
+	    	SET OutputRoot.HTTPReplyHeader."Content-Type" = 'text/xml;charset=utf-8';
+	    	CREATE FIELD OutputRoot.XMLNSC;
+	    	SET errorMessage = 'HTTP error returned for request to ' || InputLocalEnvironment.WrittenDestination.HTTP.RequestURL || ': ' || InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Line";
+	    	SET statusCode = InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code";
+	    	CALL setErrorMessage(OutputRoot, OutputLocalEnvironment, Environment, errorMessage, statusCode); 
+		END IF;
+		RETURN TRUE;
+	END;
+END MODULE;

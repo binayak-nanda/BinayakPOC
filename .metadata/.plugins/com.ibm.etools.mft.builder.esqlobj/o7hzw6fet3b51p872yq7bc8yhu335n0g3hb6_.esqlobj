@@ -1,0 +1,33 @@
+CREATE PROCEDURE createRfh2JmsString2(IN envRef REFERENCE, 
+									IN requestType CHARACTER, 
+									IN trackingId CHARACTER, 
+									IN origApp CHARACTER, 
+									IN iamUserId CHARACTER,
+									IN httpId CHARACTER,
+									IN qegReplyToQ CHARACTER) RETURNS CHARACTER
+									
+BEGIN
+		
+	DECLARE rfh2JmsStr CHARACTER;
+		
+	SET rfh2JmsStr  = SOURCE__MSG_ID ||'=' || envRef.Variables.Properties.JMSMessageID || ',' ||
+		                                              SOURCE__RESPONSE_Q || '=' || envRef.Variables.Properties.JMSReplyTo || ',' ||
+		                                              SOURCE__REQUEST_TYPE || '=' || requestType || ',' ||
+		                                              SOURCE__TRACKING_ID || '=' || trackingId || ',' ||
+		                                              ORIG_APP || '=' || origApp; 
+
+	IF LENGTH(iamUserId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__IAM_USER_ID || '=' || iamUserId;
+	END IF;
+
+	IF LENGTH(httpId) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__HTTP_ID || '=' || httpId;
+	END IF;
+
+	IF LENGTH(qegReplyToQ) > 0 THEN                                             
+		SET rfh2JmsStr  = rfh2JmsStr || ',' || SOURCE__QEG_RS_Q || '=' || qegReplyToQ;
+	END IF;
+
+		                		               		                                              		                                              
+	RETURN rfh2JmsStr;			
+END;

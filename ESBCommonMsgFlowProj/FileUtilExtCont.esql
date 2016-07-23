@@ -1,0 +1,32 @@
+-- Procedure FileUtilExtCont is to extract the FileContent element from the input schema (FileUtil.xsd)
+--
+-- Error handling will be as below:
+--    If input schema had Error element, 
+--    then argErrorExist will set it to true, error code and error message will be set as the input schema;
+--
+--    If filecontent of input schema is NULL, 
+--    then argErrorExist will set it to true, error code will be set to '001' and error message will be set;
+--    
+
+CREATE PROCEDURE FileUtilExtCont(IN argFileUtil REFERENCE, INOUT argFileContent CHAR, INOUT argErrorExist BOOLEAN, INOUT argErrorCode CHAR, INOUT argErrorMessage CHAR) BEGIN
+		
+		IF CARDINALITY(argFileUtil.Error[]) > 0 THEN
+			SET argErrorExist = TRUE;
+			SET argErrorCode = COALESCE(argFileUtil.Error.ErrorCode,'999');
+			SET argErrorMessage = COALESCE(argFileUtil.Error.ErrorMessage,'No Java Error message returned');
+		ELSE	
+			IF argFileUtil.Operation = 'Read' THEN
+				SET argFileContent = COALESCE(argFileUtil.FileContent,'#');
+				IF argFileContent in ('', '#') THEN
+					SET argErrorExist = TRUE;
+					SET argErrorCode = '001';
+					SET argErrorMessage = 'Empty File - ' || argFileUtil.Directory || argFileUtil.FileName;
+				ELSE
+					SET argErrorExist = FALSE;
+				END IF;
+			ELSE
+				SET argErrorExist = FALSE;
+			END IF;
+		END IF;	
+	
+END;

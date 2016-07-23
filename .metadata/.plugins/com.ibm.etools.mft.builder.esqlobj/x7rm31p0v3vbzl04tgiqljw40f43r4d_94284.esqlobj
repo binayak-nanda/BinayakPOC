@@ -1,0 +1,12 @@
+CREATE FUNCTION ConvertStringToDate(pDate CHARACTER, pDateFormat CHARACTER) RETURNS DATE
+BEGIN
+	
+	DECLARE targetDate DATE NULL;
+	DECLARE charDate CHARACTER '';
+	
+	IF pDate IS NOT NULL AND LENGTH(pDate) > 1 AND pDate <> '00000000' THEN
+		SET targetDate = CAST(pDate AS DATE FORMAT pDateFormat);
+	END IF;	
+
+	RETURN targetDate;
+END;

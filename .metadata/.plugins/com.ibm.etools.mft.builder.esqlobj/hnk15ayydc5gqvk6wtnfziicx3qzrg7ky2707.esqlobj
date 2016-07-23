@@ -1,0 +1,26 @@
+CREATE FUNCTION GetPropertyFromList(pList CHARACTER, pProperty CHARACTER) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE startIndex    INT; 
+	DECLARE propertyValue CHARACTER '';
+	DECLARE commaIndex    INT;
+	DECLARE valueLength   INT;
+		
+	SET startIndex = POSITION(pProperty IN pList); 
+				
+	IF startIndex > 0 THEN 			
+		SET startIndex = startIndex + LENGTH(pProperty) + 1; -- The 1 is for the '=' character
+		SET commaIndex = POSITION(',' IN pList FROM startIndex);
+			
+		IF commaIndex > 0 THEN
+			SET valueLength = commaIndex - startIndex;
+			SET propertyValue = SUBSTRING(pList FROM startIndex FOR valueLength);
+		ELSE	
+			SET propertyValue = SUBSTRING(pList FROM startIndex);
+		END IF;
+			
+	END IF;
+
+    RETURN propertyValue;
+		
+END;

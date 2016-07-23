@@ -1,0 +1,41 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		DECLARE stat CHARACTER;
+
+
+		DECLARE FIELDNAME CHARACTER;
+		SET FIELDNAME = FIELDNAME(Root. XMLNSC.*[<]);
+		
+	--	DECLARE ErrorCode CHARACTER;
+	--	SET ErrorCode = LocalEnvironment.Variables.ErrorCode;
+		
+  IF FIELDNAME = 'ASAPResponse' THEN
+			
+				--Directly  Going to P3
+		RETURN FALSE;  
+	
+  ELSE	
+  	    
+	    --This loop considering Response is coming from HDM without change		
+ 		DECLARE REQ CHAR;
+        SET REQ = LocalEnvironment.Variables.RequestType;
+        
+       -- DECLARE REQ2 CHAR;
+       -- SET REQ2 = LocalEnvironment.Variables.RequestType2;
+        DECLARE status CHAR;
+        SET status =  Root.XMLNSC.HDMProxyResponse.Response.Status ;
+        
+		IF ( status = 'Pass' OR status='Fail') AND ( REQ= 'Create' OR REQ = 'Disconnect') THEN
+			-- Going to ASAP_REQ
+			RETURN TRUE;
+		END IF;
+		IF ( status = 'Pass' OR status='Fail') AND (REQ= 'CreateCascade' OR REQ = 'DisconnectCascade' ) THEN
+			-- Going to P3
+			RETURN FALSE;
+		END IF;  
+	   
+			
+  END IF;  --  IF for FieldName				
+			
+	END;
+

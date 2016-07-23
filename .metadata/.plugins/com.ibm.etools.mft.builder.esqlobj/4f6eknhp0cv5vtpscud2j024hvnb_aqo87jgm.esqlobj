@@ -1,0 +1,38 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		
+		SET OutputRoot = InputRoot;
+		
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+        DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+        
+        DECLARE envRef REFERENCE TO Environment;
+        
+        CALL LoadProperties(envRef);
+
+		--GQ - Noticed this needs to be set before calling MapCommonInfoToCommonEvent
+        SET Environment.Variables.QBE.ESBEvent.Event.Role = 'error';
+        SET Environment.Variables.LogPoint = 'failure';
+						
+        DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+        
+-- Not setting Service Name or Broker with this statement, so removing it. 
+--IF (envRef.Variables.CommonInfoMappedFlag <> TRUE) THEN
+	        CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+--        END IF;        
+		
+		SET eventRef.MessageContext.MessageId             = '';
+		SET eventRef.MessageContext.CorrelationId         = COALESCE(InputLocalEnvironment.Destination.HTTP.RequestIdentifier, '');
+		SET eventRef.MessageContext.Destination.Transport = 'SOAP-HTTP';	
+		SET eventRef.MessageContext.Destination.Name      = COALESCE(envRef.Variables.Properties.SourceDestination, '');
+		SET eventRef.MessageContext.Destination.Type      = 'HTTP Input';
+
+		DECLARE excpListPath REFERENCE TO InputExceptionList.*[1];		
+		CALL MapErrorToCommonEvent(envRef, excpListPath);
+		
+		SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		
+		RETURN TRUE;
+
+	END;
+

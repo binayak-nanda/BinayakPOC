@@ -1,0 +1,10 @@
+CREATE PROCEDURE ValueIfNull(IN valuein CHARACTER, IN valueout CHARACTER) RETURNS CHARACTER
+BEGIN
+	
+	IF valuein IS NULL THEN
+		RETURN valueout;
+	ELSE
+		RETURN valuein;
+	END IF;
+	
+END;

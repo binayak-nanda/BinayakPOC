@@ -1,0 +1,7 @@
+CREATE COMPUTE MODULE ReplyContext_CleanMQMD
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+		DELETE FIELD OutputLocalEnvironment.Variables.ReplyContext.MQMD;
+	END;
+END MODULE;

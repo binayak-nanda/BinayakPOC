@@ -1,0 +1,14 @@
+CREATE FILTER MODULE ESBInputCatchRethrowFilter
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE envRef REFERENCE TO Environment;
+		DECLARE catchRethrowFlag BOOLEAN FALSE;
+		
+		-- UDPs cannot be promoted more than one level. Set to environment for availability frther down the flow
+		SET envRef.Variables.Properties.Rethrow = Rethrow; 
+			
+		RETURN envRef.Variables.Properties.Rethrow;
+	END;
+
+END MODULE;

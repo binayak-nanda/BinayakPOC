@@ -1,0 +1,20 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+		-- Prepare MQMD for matching, the CorrelId of the reply message will
+		-- match the MsgId of the original request from the context queue
+		IF EXISTS(InputRoot.MQMD[]) THEN
+			SET OutputLocalEnvironment.Variables.ReplyContext.MQMD = InputRoot.MQMD;
+			SET OutputLocalEnvironment.Variables.ReplyContext.MQMD.MsgId = InputRoot.MQMD.CorrelId;
+			SET OutputLocalEnvironment.Variables.ReplyContext.MQMD.CorrelId = MQMI_NONE;
+		
+--			LOG EVENT VALUES ('..........transaction', InputRoot.MQMD.CorrelId);
+		ELSE
+			DELETE FIELD OutputLocalEnvironment.Variables.ReplyContext.MQMD;
+			CREATE LASTCHILD OF OutputLocalEnvironment.Variables.ReplyContext DOMAIN('MQMD');
+			SET OutputLocalEnvironment.Variables.ReplyContext.MQMD.MsgId = CAST(SUBSTRING(InputRoot.JMSTransport.Transport_Folders.Header_Values.JMSCorrelationID FROM 4) AS BLOB);
+			SET OutputLocalEnvironment.Variables.ReplyContext.MQMD.CorrelId = MQMI_NONE;
+		END IF;		
+		RETURN TRUE;
+	END;
+

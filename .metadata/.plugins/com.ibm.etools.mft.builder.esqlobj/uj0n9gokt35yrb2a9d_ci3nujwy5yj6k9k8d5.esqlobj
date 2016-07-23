@@ -1,0 +1,22 @@
+CREATE PROCEDURE AddRfh2ToMessage(INOUT OutputRoot REFERENCE, IN correlId CHARACTER, IN replyToQ CHARACTER, IN httpId CHARACTER, IN soapId CHARACTER) 
+	BEGIN
+
+--	Create a RFH2 header to store data across the call to the mainframe
+		CREATE NEXTSIBLING of OutputRoot.MQMD DOMAIN 'MQRFH2';
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)Flags 			= MQRFH_NONE;
+		SET OutputRoot.MQRFH2.(MQRFH2.Field)Format 			= MQFMT_STRING;
+--		SET OutputRoot.MQRFH2.(MQRFH2.Field)NamareValueCCSID	= 1208;
+--		SET OutputRoot.MQRFH2.(MQRFH2.Field)CodedCharSetId 	= 1208;	
+
+--		DECLARE mqrfh2Message CHARACTER;		
+--		SET mqrfh2Message = getMQ_CORREL_ID() || '=' || COALESCE(correlId, '')
+--				|| ',' || getREPLY_TO_QUEUE() || '=' || COALESCE(replyToQ, '')
+--				|| ',' || getHTTP_ID() || '=' || COALESCE(httpId, '');
+		
+--		SET OutputRoot.MQRFH2.usr.RequestIdentifier = mqrfh2Message;
+		SET OutputRoot.MQRFH2.usr.correlId = COALESCE(correlId, '');
+		SET OutputRoot.MQRFH2.usr.replyToQ = TRIM(COALESCE(replyToQ, ''));
+		SET OutputRoot.MQRFH2.usr.httpId = COALESCE(httpId, '');
+		SET OutputRoot.MQRFH2.usr.soapId = COALESCE(soapId, '');
+				
+	END;

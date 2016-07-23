@@ -1,0 +1,13 @@
+CREATE PROCEDURE LoadProperties(INOUT envRef REFERENCE)
+	BEGIN
+
+        SET envRef.Variables.Properties.TraceLevel        = TraceLevel;
+		SET envRef.Variables.Properties.ServiceName       = ServiceName;
+		SET envRef.Variables.Properties.Direction         = Direction;
+		SET envRef.Variables.Properties.ProjectName       = ProjectName;
+		SET envRef.Variables.Properties.SourceDestination = SourceDestination;
+		SET envRef.Variables.Properties.Server            = Server;
+		SET envRef.Variables.Properties.LogMessageHeader  = LogMessageHeader;
+		
+     
+END;

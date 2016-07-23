@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><mappingRoot xmlns="http://www.ibm.com/2008/ccl/Mapping" domainID="com.ibm.msl.mapping.xml" domainIDExtension="mb" mainMap="true" targetNamespace="default" version="8.0.5.0" xmlns:map="default">
+    <input path="/sample/iibadmin/SAMPLE_EMPLOYEE.xsd" var="var"/>
+    <input path="jar:file://!com/ibm/msl/mapping/rdb/xsds/dbreturn.xsd" var="var1"/>
+    <input path="jar:file://!com/ibm/msl/mapping/rdb/xsds/dbexception.xsd" var="var2"/>
+    <output path="/sample/iibadmin/SAMPLE_EMPLOYEE.xsd" var="var3"/>
+    <output path="db:table(/SAMPLE.dbm,SAMPLE,IIBADMIN,EMPLOYEE)" var="EMPLOYEE"/>
+    <namespaces>
+        <namespace kind="supplement" prefix="io" uri="http://sample/iibadmin"/>
+    </namespaces>
+    <generation engine="xquery"/>
+    <mappingDeclaration name="updEmp">
+        <input namespace="http://sample/iibadmin" path="$var/mb:msg(EMPLOYEE,assembly,XMLNSC,Properties)" var="ComIbmMessageAssembly_EMPLOYEE"/>
+        <output namespace="http://sample/iibadmin" path="$var3/mb:msg(EmployeeResponse,assembly,XMLNSC,Properties)" var="ComIbmMessageAssembly_EmployeeResponse"/>
+        <output path="$EMPLOYEE/db:update(fn:false(),fn:true(),db:where('IIBADMIN.EMPLOYEE.EMPNO =  ?','?'=$ComIbmMessageAssembly_EMPLOYEE/io:EMPLOYEE/EMPNO),EMPNO,FIRSTNME,MIDINIT,LASTNAME,WORKDEPT,PHONENO,HIREDATE,JOB,EDLEVEL,SEX,BIRTHDATE,SALARY,BONUS,COMM)" var="dbupdate"/>
+        <move>
+            <input path="$ComIbmMessageAssembly_EMPLOYEE/Properties"/>
+            <output path="$ComIbmMessageAssembly_EmployeeResponse/Properties"/>
+            <override>
+                <assign value="{EmployeeServiceInterface}">
+                    <output path="$ComIbmMessageAssembly_EmployeeResponse/Properties/MessageSet"/>
+                </assign>
+            </override>
+        </move>
+        <transaction>
+            <update ref="dbupdate">
+                <input path="$ComIbmMessageAssembly_EMPLOYEE/EMPLOYEE" var="EMPLOYEE1"/>
+                <output path="$dbupdate/."/>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/EMPNO"/>
+                    <output path="EMPNO"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/FIRSTNME"/>
+                    <output path="FIRSTNME"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/MIDINIT"/>
+                    <output path="MIDINIT"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/LASTNAME"/>
+                    <output path="LASTNAME"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/WORKDEPT"/>
+                    <output path="WORKDEPT"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/PHONENO"/>
+                    <output path="PHONENO"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/HIREDATE"/>
+                    <output path="HIREDATE"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/JOB"/>
+                    <output path="JOB"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/EDLEVEL"/>
+                    <output path="EDLEVEL"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/SEX"/>
+                    <output path="SEX"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/BIRTHDATE"/>
+                    <output path="BIRTHDATE"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/SALARY"/>
+                    <output path="SALARY"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/BONUS"/>
+                    <output path="BONUS"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE1/COMM"/>
+                    <output path="COMM"/>
+                </move>
+            </update>
+            <return>
+                <input path="$var1/DBUpdateReturn" var="DBUpdateReturn"/>
+                <input path="$ComIbmMessageAssembly_EMPLOYEE/EMPLOYEE" var="EMPLOYEE2"/>
+                <output path="$ComIbmMessageAssembly_EmployeeResponse/EmployeeResponse"/>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/EMPNO"/>
+                    <output path="EMPLOYEE/EMPNO"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/FIRSTNME"/>
+                    <output path="EMPLOYEE/FIRSTNME"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/MIDINIT"/>
+                    <output path="EMPLOYEE/MIDINIT"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/LASTNAME"/>
+                    <output path="EMPLOYEE/LASTNAME"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/WORKDEPT"/>
+                    <output path="EMPLOYEE/WORKDEPT"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/PHONENO"/>
+                    <output path="EMPLOYEE/PHONENO"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/HIREDATE"/>
+                    <output path="EMPLOYEE/HIREDATE"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/JOB"/>
+                    <output path="EMPLOYEE/JOB"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/EDLEVEL"/>
+                    <output path="EMPLOYEE/EDLEVEL"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/SEX"/>
+                    <output path="EMPLOYEE/SEX"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/BIRTHDATE"/>
+                    <output path="EMPLOYEE/BIRTHDATE"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/SALARY"/>
+                    <output path="EMPLOYEE/SALARY"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/BONUS"/>
+                    <output path="EMPLOYEE/BONUS"/>
+                </move>
+                <move automap="true">
+                    <input path="$EMPLOYEE2/COMM"/>
+                    <output path="EMPLOYEE/COMM"/>
+                </move>
+                <move>
+                    <input path="$DBUpdateReturn/NumberOfRowsUpdated"/>
+                    <output path="DBResp/RowsUpdated"/>
+                </move>
+                <assign value="0">
+                    <output path="DBResp/UserReturnCode"/>
+                </assign>
+            </return>
+            <failure>
+                <input path="$var2/DBExceptions"/>
+                <output path="$ComIbmMessageAssembly_EmployeeResponse/EmployeeResponse"/>
+                <move>
+                    <input path="DBException/ErrorCode"/>
+                    <output path="DBResp/SQLCode_ErrorCode"/>
+                </move>
+                <move>
+                    <input path="DBException/SQLState"/>
+                    <output path="DBResp/SQLState_SQLState"/>
+                </move>
+                <move>
+                    <input path="DBException/Message"/>
+                    <output path="DBResp/SQL_Error_Message"/>
+                </move>
+            </failure>
+        </transaction>
+    </mappingDeclaration>
+</mappingRoot>

@@ -1,0 +1,5 @@
+CREATE PROCEDURE SetDestinationQueue(IN queueName CHAR, IN OutputLocalEnvironment REFERENCE) 
+	BEGIN
+		SET OutputLocalEnvironment.Destination.MQDestinationList.DestinationData[1].queueName = queueName;
+	   -- SET OutputLocalEnvironment.Destination.MQDestinationList.DestinationData[1].queueManagerName = QueueManagerName;
+	END;

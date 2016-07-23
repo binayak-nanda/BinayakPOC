@@ -1,0 +1,17 @@
+Running command...
+C:\IBM\IIB\10.0.0.0\common\jdk\bin\xjc.exe -d "C:\workspaces\EmployeeServiceGlobalCache\EmployeeServiceJavaP\src" -p "com.ibm.betaworks" "C:\workspaces\EmployeeServiceGlobalCache\EmployeeServiceInterface\EmployeeService.xsd" 
+parsing a schema...
+compiling a schema...
+com\ibm\betaworks\DBRespType.java
+com\ibm\betaworks\EMPLOYEEType.java
+com\ibm\betaworks\EmployeeResponseType.java
+com\ibm\betaworks\GetEmployee.java
+com\ibm\betaworks\GetEmployeeCache.java
+com\ibm\betaworks\GetEmployeeCacheResponse.java
+com\ibm\betaworks\GetEmployeeResponse.java
+com\ibm\betaworks\LoadCache.java
+com\ibm\betaworks\LoadCacheResponse.java
+com\ibm\betaworks\ObjectFactory.java
+com\ibm\betaworks\UpdEmployee.java
+com\ibm\betaworks\UpdEmployeeResponse.java
+com\ibm\betaworks\package-info.java

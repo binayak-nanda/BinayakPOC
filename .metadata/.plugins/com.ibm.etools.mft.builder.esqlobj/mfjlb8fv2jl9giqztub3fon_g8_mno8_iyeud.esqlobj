@@ -1,0 +1,11 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+	    SET OutputRoot = InputRoot;
+	    
+	    DECLARE errorMessage CHARACTER;
+	    DECLARE number INTEGER;
+        CALL getLastExceptionDetail(InputExceptionList, number, errorMessage);
+	    CALL setErrorMessage(OutputRoot, OutputLocalEnvironment, Environment, errorMessage, number); 
+		RETURN TRUE;
+	END;

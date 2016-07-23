@@ -1,0 +1,14 @@
+CREATE PROCEDURE MapRsOpNotDeterminedToStatusInfo(INOUT statusInfoRef REFERENCE)
+BEGIN
+		CREATE LASTCHILD OF statusInfoRef NAME 'Status';   	 
+		
+        /* Store the current exception details */
+        SET statusInfoRef.Status.Timestamp   = CURRENT_TIMESTAMP;
+        SET statusInfoRef.Status.Code        = '3106';
+        SET statusInfoRef.Status.Text        = 'A failure has occurred in the Enterprise Service Bus while attempting to process the request';
+        SET statusInfoRef.Status.Severity    = 'Fatal';
+        SET statusInfoRef.Status.Type        = 'System';
+        SET statusInfoRef.Status.Description = 'Unable to determine the service operation. Ensure the response message contains a valid request type in the ESB segment.';
+        SET statusInfoRef.Status.Source      = 'ESB';
+        		
+END;

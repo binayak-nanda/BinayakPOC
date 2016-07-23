@@ -1,0 +1,179 @@
+CREATE COMPUTE MODULE ConstructESBEventMsg
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		
+		-- SET OutputRoot.Properties = InputRoot.Properties;
+		-- SET OutputRoot.Properties.ReplyIdentifier = X'000000000000000000000000000000000000000000000000';
+		
+		DECLARE qbe NAMESPACE 'http://qbe.com.au/esb/schema/qbe/1';
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+		DECLARE envRef REFERENCE TO Environment;
+        --DECLARE inputRootRef REFERENCE TO InputRoot;
+        DECLARE inputBodyRef REFERENCE TO InputBody;
+        DECLARE tempCorrelId BLOB '';
+ 		
+		CALL SetMessageProperties(outputRootRef, 'ESBEventMsgSet', 'ESBEvent', 'XML1');
+		
+		CREATE NEXTSIBLING OF OutputRoot.Properties DOMAIN 'MQMD';
+		SET OutputRoot.MQMD.Format = MQFMT_STRING;
+		
+        -- Create output domain
+	    -- Delete any existing data
+--	    IF UPPER(FIELDNAME(InputBody)) IN ('XML', 'MRM', 'BLOB', 'XMLNS', 'XMLNSC') THEN
+--		   EVAL('SET OutputRoot.' || FIELDNAME(InputBody) || ' = NULL;');
+--	    END IF;
+
+	    CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNS') TYPE Name NAME 'XMLNS'; 	
+--	    SET OutputRoot.Properties.MessageDomain = 'XMLNS'; 
+--	    SET OutputRoot.XMLNS.(XML.XmlDecl).(XML.Version)='1.0'; 
+--	    SET OutputRoot.XMLNS.(XML.XmlDecl).(XML.Encoding)='UTF-8';
+	    
+	    DECLARE outputMsgRootRef REFERENCE TO OutputRoot.XMLNS;
+	    
+        CREATE FIELD outputMsgRootRef.qbe:ESBEvent;
+        
+	    -- Map the response.
+	    SET outputMsgRootRef.qbe:ESBEvent.(XML.NamespaceDecl)xmlns:qbe = 'http://qbe.com.au/esb/schema/qbe/1';
+
+        CREATE FIELD outputMsgRootRef.qbe:ESBEvent.qbe:Event;
+        DECLARE eventRef REFERENCE TO outputMsgRootRef.qbe:ESBEvent.qbe:Event;
+        DECLARE envEventRef REFERENCE TO envRef.Variables.QBE.ESBEvent.Event;
+        
+        SET eventRef.qbe:Role = envEventRef.Role;
+--        SET eventRef.qbe:Timestamp = envEventRef.Timestamp;
+        SET eventRef.qbe:Timestamp VALUE = CAST(CURRENT_GMTTIMESTAMP AS CHAR FORMAT 'IU');
+        SET eventRef.qbe:LogPoint  = envEventRef.LogPoint;
+        SET eventRef.qbe:EventSource.qbe:ServiceName         = envEventRef.EventSource.ServiceName;
+        SET eventRef.qbe:EventSource.qbe:Operation           = envEventRef.EventSource.Operation;
+        SET eventRef.qbe:EventSource.qbe:Direction           = envEventRef.EventSource.Direction;
+        SET eventRef.qbe:EventSource.qbe:Source              = envEventRef.EventSource.Source;
+        SET eventRef.qbe:EventSource.qbe:UserId              = envEventRef.EventSource.UserId;
+        SET eventRef.qbe:EventSource.qbe:ConsumerUserId      = envEventRef.EventSource.ConsumerUserId;  
+        SET eventRef.qbe:EventSource.qbe:ProcessName         = envEventRef.EventSource.ProcessName;
+        SET eventRef.qbe:EventSource.qbe:ProcessInstanceName = envEventRef.EventSource.ProcessInstanceName;
+        SET eventRef.qbe:EventSource.qbe:ProcessId           = envEventRef.EventSource.ProcessId;
+        SET eventRef.qbe:EventSource.qbe:ComponentName       = envEventRef.EventSource.ComponentName;
+        SET eventRef.qbe:EventSource.qbe:ProjectName         = envEventRef.EventSource.ProjectName;
+        SET eventRef.qbe:EventSource.qbe:QueueManagerName    = envEventRef.EventSource.QueueManagerName;
+        SET eventRef.qbe:EventSource.qbe:BrokerName          = envEventRef.EventSource.BrokerName;
+        SET eventRef.qbe:EventSource.qbe:ExecutionGroup      = envEventRef.EventSource.ExecutionGroup;
+        SET eventRef.qbe:EventSource.qbe:MessageFlowName     = envEventRef.EventSource.MessageFlowName;
+        SET eventRef.qbe:EventSource.qbe:TrackingId          = envEventRef.EventSource.TrackingId;
+        SET eventRef.qbe:EventSource.qbe:MessageStatus       = envEventRef.EventSource.MessageStatus;
+        -- Map all AppContext Ids.
+        DECLARE i INTEGER 1;
+        DECLARE appContextRef REFERENCE TO envEventRef.EventCorrelation.AppContext;
+	
+		WHILE LASTMOVE(appContextRef) DO
+			
+			SET eventRef.qbe:EventCorrelation.qbe:AppContext[i].qbe:Name   = appContextRef.Name; 
+            SET eventRef.qbe:EventCorrelation.qbe:AppContext[i].qbe:Value  = appContextRef.Value;
+			SET i = i + 1;			
+				
+			MOVE appContextRef NEXTSIBLING REPEAT TYPE NAME;
+		
+		END WHILE;
+     
+--        SET eventRef.qbe:EventCorrelation.qbe:TransactionContext.qbe:TransactionId   = envEventRef.EventCorrelation.TransactionContext.TransactionId;
+--        SET eventRef.qbe:EventCorrelation.qbe:TransactionContext.qbe:TransactionName = envEventRef.EventCorrelation.TransactionContext.TransactionName;
+--        SET eventRef.qbe:EventCorrelation.qbe:TransactionContext.qbe:StartTime       = envEventRef.EventCorrelation.TransactionContext.StartTime;
+--        SET eventRef.qbe:EventCorrelation.qbe:TransactionContext.qbe:SourceName      = envEventRef.EventCorrelation.TransactionContext.SourceName;
+        
+        -- DECLARE options INTEGER BITOR(EmbeddedBitStream, ValidateNone);
+        
+        -- If there is an InputBody and the LogPayload flag is checked then copy payload.
+        IF (CARDINALITY(InputBody.*[]) > 0) THEN
+        	SET eventRef.qbe:MessageContext.qbe:Payload = InputRoot.BLOB.BLOB;
+	    END IF;
+        
+        SET eventRef.qbe:MessageContext.qbe:MessageId                 = envEventRef.MessageContext.MessageId;
+        SET eventRef.qbe:MessageContext.qbe:CorrelationId             = envEventRef.MessageContext.CorrelationId;
+        SET eventRef.qbe:MessageContext.qbe:MessageSet                = envEventRef.MessageContext.MessageSet;
+        SET eventRef.qbe:MessageContext.qbe:MessageType               = envEventRef.MessageContext.MessageType;
+        SET eventRef.qbe:MessageContext.qbe:MessageFormat             = envEventRef.MessageContext.MessageFormat;
+        SET eventRef.qbe:MessageContext.qbe:CCSID                     = envEventRef.MessageContext.CCSID;
+        SET eventRef.qbe:MessageContext.qbe:Encoding                  = envEventRef.MessageContext.Encoding;
+        SET eventRef.qbe:MessageContext.qbe:Destination.qbe:Transport = envEventRef.MessageContext.Destination.Transport;
+        SET eventRef.qbe:MessageContext.qbe:Destination.qbe:Server    = envEventRef.MessageContext.Destination.Server;
+        SET eventRef.qbe:MessageContext.qbe:Destination.qbe:Name      = envEventRef.MessageContext.Destination.Name;
+        SET eventRef.qbe:MessageContext.qbe:Destination.qbe:Type      = envEventRef.MessageContext.Destination.Type;
+        SET eventRef.qbe:MessageContext.qbe:CompressAlgo = 'GZIP';
+  
+-- uncomment for HD0000001194003      
+--        IF envRef.Variables.Properties.LogMessageHeader THEN
+        	-- Extract message header
+			SET eventRef.qbe:MessageContext.qbe:MessageHeader = InputRoot;
+			-- Delete message body leaving only the header
+			SET eventRef.qbe:MessageContext.qbe:MessageHeader.BLOB = NULL;
+			SET eventRef.qbe:MessageContext.qbe:MessageHeader.XMLNSC = NULL;
+			SET eventRef.qbe:MessageContext.qbe:MessageHeader.XMLNS = NULL;
+			SET eventRef.qbe:MessageContext.qbe:MessageHeader.MRM = NULL;
+--        END IF;
+		
+ 		-- Set reference to the error array in the ESBEvent set in the environment.
+        DECLARE errorEntryRef REFERENCE TO envEventRef.ErrorInfo.Error[>];
+        
+        -- reset the index.
+        SET i = 1;
+        
+        -- If any errors exist map them to the ESBEvent message.
+        IF (CARDINALITY(envEventRef.ErrorInfo[]) > 0) THEN
+        	
+        	WHILE LASTMOVE(errorEntryRef) DO
+        		
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:ServiceName      = errorEntryRef.ServiceName;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:Timestamp        = errorEntryRef.Timestamp;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:ErrorCode        = errorEntryRef.ErrorCode;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:ErrorText        = errorEntryRef.ErrorText;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:ErrorSeverity    = errorEntryRef.ErrorSeverity;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:ErrorType        = errorEntryRef.ErrorType;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:ErrorDescription = errorEntryRef.ErrorDescription;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:ErrorSource      = errorEntryRef.ErrorSource;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:InputData        = errorEntryRef.InputData;
+	        	SET eventRef.qbe:ErrorInfo.qbe:Error[i].qbe:DebugData        = errorEntryRef.DebugData;
+			
+			    SET i = i + 1;			
+				
+			    MOVE errorEntryRef NEXTSIBLING REPEAT TYPE NAME;
+		
+		    END WHILE;	   
+		         
+        END IF;
+		
+		SET OutputRoot.Properties.CodedCharSetId = 1208; -- Set to UTF-8
+		
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+
+--	CREATE PROCEDURE CopyMessageHeadersOnly() BEGIN
+--		DECLARE I INTEGER 1;
+--		DECLARE J INTEGER;
+--		SET J = CARDINALITY(InputRoot.*[]);
+--		WHILE I <= J DO
+--		    -- Copy only the headers. If an input body exists do not copy over.
+--		    IF UPPER(FIELDNAME(InputRoot.*[I])) NOT IN ('XML', 'MRM', 'BLOB', 'XMLNS', 'XMLNSC') THEN
+--		       SET OutputRoot.*[I] = InputRoot.*[I];
+--	        END IF;
+--	        
+--			SET I = I + 1;
+--		END WHILE;
+--	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmFlowOrder.msgnode="ComIbmFlowOrder.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:ComIbmPassthru.msgnode="ComIbmPassthru.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="MQContext/RequestContext.msgflow"
+    nsPrefix="MQContext_RequestContext.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.ContextQueue" name="ContextQueue" defaultValueLiteral="CONTEXT">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="RequestContext" bundleName="MQContext/RequestContext" pluginId="ESBCommonMsgFlowProj"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj16/RequestContext.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj30/RequestContext.gif"/>
+    <shortDescription xmi:type="utility:ConstantString" string="Stores request in context queue"/>
+    <longDescription xmi:type="utility:ConstantString" string="The input message is assumed to be the request (to be retrieved later as context when processing the reply).&#xD;&#xA;This subflow should be wired after the MQOutput node sending the request. This is because the subflow uses the WrittenDestination data in the LocalEnvironment to capture the reply identifier from the request.&#xD;&#xA;The existing correlation ID in the request is overwritten by the reply identifier (to allow retrieval later).&#xD;&#xA;The flow propagates the original input message as output (unmodified).&#xD;&#xA;&#xD;&#xA;It is also possible to put a different message as context (perhaps a modified version of the request, or an entirely different message body), provided that the WrittenDestination data in the LocalEnvironment accurately reflects the IDs in the request message."/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="10,20">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="MQContext/RequestContext" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="194,20">
+        <translation xmi:type="utility:ConstantString" string="FlowOrder"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="382,20" transactionMode="yes" messageContext="default">
+        <translation xmi:type="utility:ConstantString" string="MQOutput"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="293,99">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="MQContext/RequestContext" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="288,20" computeExpression="esql://routine/MQContext#RequestContext_Fix_MQMD.Main">
+        <translation xmi:type="utility:ConstantString" string="Fix MQMD"/>
+      </nodes>
+      <nodes xmi:type="ComIbmPassthru.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="93,20" label="$MQSI Request Context Version=$Revision: 1.1 $ MQSI$">
+        <translation xmi:type="utility:ConstantString" string="Passthrough"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.second" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.first" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_4" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Basic" configurable="true" describedAttribute="Property.ContextQueue">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.ContextQueue" bundleName="RequestContext" pluginId="MQContext"/>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.ContextQueue" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="ComIbmMQOutput.msgnode#Property.queueName"/>
+    </attributeLinks>
+  </eClassifiers>
+</ecore:EPackage>

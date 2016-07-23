@@ -1,0 +1,10 @@
+CREATE PROCEDURE BlankIfNull(IN data CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE charBlank CHARACTER ' ';
+		
+	IF data IS NOT NULL THEN
+		SET charBlank = data;
+	END IF;
+	
+	RETURN charBlank;	
+END;

@@ -1,0 +1,9 @@
+BROKER SCHEMA MQContext
+
+CREATE COMPUTE MODULE SimpleService_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot.MQMD = InputRoot.MQMD;
+		SET OutputRoot.XMLNSC.Result = 'true';
+	END;
+END MODULE;

@@ -1,0 +1,9 @@
+CREATE PROCEDURE TruncateIfNecessary(IN field CHAR, IN maxLength INTEGER) RETURNS CHAR BEGIN
+	
+	IF field IS NOT NULL AND LENGTH(field) > maxLength THEN
+		SET field = SUBSTRING(field FROM 1 FOR maxLength);
+	END IF;
+	
+	RETURN field;
+	
+END;

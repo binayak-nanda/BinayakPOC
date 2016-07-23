@@ -1,0 +1,75 @@
+CREATE PROCEDURE MapCommonInfoToCommonEvent(INOUT envRef REFERENCE, INOUT inputPropRef REFERENCE, INOUT outputRootRef REFERENCE)
+	BEGIN
+      
+        -- Flag to indicate whether the common info has been mapped to ESBEvent.
+        SET envRef.Variables.CommonInfoMappedFlag = FALSE;
+        
+        DECLARE eventRef REFERENCE TO envRef.Variables.QBE.ESBEvent.Event;
+                
+ 		SET eventRef.Timestamp VALUE                       = CAST(CURRENT_GMTTIMESTAMP AS CHAR FORMAT 'IU');
+ 		SET eventRef.EventSource.ServiceName VALUE         = envRef.Variables.Properties.ServiceName; -- Gets set in flow specific esql
+ 		SET eventRef.EventSource.Operation VALUE           = eventRef.EventSource.Operation; -- Gets set in flow specific esql
+ 		SET eventRef.EventSource.Direction VALUE           = envRef.Variables.Properties.Direction; -- Gets set in flow specific esql
+ 		SET eventRef.EventSource.Source VALUE              = eventRef.EventSource.Source; -- Gets set in flow specific esql
+ 		SET eventRef.EventSource.UserId VALUE              = NULL; -- Gets set in flow specific esql
+ 		SET eventRef.EventSource.ConsumerUserId VALUE      = COALESCE(eventRef.EventSource.ConsumerUserId, '');
+ 		SET eventRef.EventSource.ProcessName VALUE         = NULL;
+ 		SET eventRef.EventSource.ProcessInstanceName VALUE = NULL;
+ 		SET eventRef.EventSource.ProcessId VALUE           = ProcessId;
+ 		SET eventRef.EventSource.ComponentName VALUE       = MessageFlowLabel;
+ 		SET eventRef.EventSource.ProjectName VALUE         = envRef.Variables.Properties.ProjectName;
+ 		SET eventRef.EventSource.QueueManagerName VALUE    = QueueManagerName;
+ 		SET eventRef.EventSource.BrokerName VALUE          = BrokerName;
+ 		SET eventRef.EventSource.ExecutionGroup VALUE      = ExecutionGroupLabel;
+ 		SET eventRef.EventSource.MessageFlowName VALUE     = MessageFlowLabel;
+ 		SET eventRef.EventSource.TrackingId VALUE          = COALESCE(eventRef.EventSource.TrackingId, '');
+ 		SET eventRef.EventSource.MessageStatus VALUE       = COALESCE(eventRef.EventSource.MessageStatus, '');
+		CREATE FIELD eventRef.EventCorrelation;
+		--SET eventRef.EventCorrelation.AppContext[1].Name  = ''; -- Gets set in flow specific esql
+		--SET eventRef.EventCorrelation.AppContext[1].Value = '';	-- Gets set in flow specific esql
+		
+--		SET eventRef.EventCorrelation.TransactionContext.TransactionId   VALUE = NULL;
+--		SET eventRef.EventCorrelation.TransactionContext.TransactionName VALUE = NULL;
+--		SET eventRef.EventCorrelation.TransactionContext.StartTime       VALUE = NULL;
+--		SET eventRef.EventCorrelation.TransactionContext.SourceName      VALUE = NULL;	
+	
+		SET eventRef.MessageContext.Payload VALUE               = NULL;
+		SET eventRef.MessageContext.MessageId VALUE             = NULL;
+		SET eventRef.MessageContext.CorrelationId VALUE         = NULL;
+		SET eventRef.MessageContext.MessageSet VALUE            = inputPropRef.MessageSet;
+		SET eventRef.MessageContext.MessageType VALUE           = inputPropRef.MessageType;
+		SET eventRef.MessageContext.MessageFormat VALUE         = inputPropRef.MessageFormat;
+		SET eventRef.MessageContext.CCSID VALUE                 = inputPropRef.CodedCharSetId;
+		SET eventRef.MessageContext.Encoding VALUE              = inputPropRef.Encoding;
+		
+		SET eventRef.MessageContext.Destination.Transport VALUE = NULL;
+		SET eventRef.MessageContext.Destination.Server VALUE    = envRef.Variables.Properties.Server;
+		SET eventRef.MessageContext.Destination.Name VALUE      = NULL;
+		SET eventRef.MessageContext.Destination.Type VALUE      = NULL;
+		
+		SET envRef.Variables.CommonInfoMappedFlag = TRUE;
+		
+		-- Try to identify the operation
+ 		DECLARE operation CHARACTER NULL;
+ 		IF EXISTS(outputRootRef.MRM[]) THEN
+ 			SET operation = inputPropRef.MessageType; -- e.g. COBOL message name
+ 		ELSEIF EXISTS(outputRootRef.XMLNSC[]) THEN
+ 			-- check for SOAP
+ 			IF EXISTS(outputRootRef.XMLNSC.soap:Envelope.soap:Body.*[]) THEN
+ 				SET operation = FIELDNAME(outputRootRef.XMLNSC.soap:Envelope.soap:Body.*[>]);
+ 			ELSE
+ 				-- plain XML
+ 				SET operation = FIELDNAME(outputRootRef.XMLNSC.*[>]);
+ 			END IF;
+ 		ELSEIF EXISTS(outputRootRef.XMLNS[]) THEN
+ 			-- check for SOAP
+ 			IF EXISTS(outputRootRef.XMLNS.soap:Envelope.soap:Body.*[]) THEN
+ 				SET operation = FIELDNAME(outputRootRef.XMLNS.soap:Envelope.soap:Body.*[>]);
+ 			ELSE
+ 				-- plain XML
+ 				SET operation = FIELDNAME(outputRootRef.XMLNS.*[>]);
+ 			END IF;
+ 		END IF;	
+ 		SET eventRef.EventSource.Operation VALUE = operation;
+		
+END;

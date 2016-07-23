@@ -1,0 +1,13 @@
+CREATE PROCEDURE PopulateStatusInfoElement(IN statusRef REFERENCE, IN code CHARACTER, IN text CHARACTER, IN severity CHARACTER, IN source CHARACTER, IN statusType CHARACTER) 
+BEGIN
+	
+	DECLARE currTimestamp TIMESTAMP CURRENT_TIMESTAMP;
+	
+	SET statusRef.Timestamp   = currTimestamp;
+	SET statusRef.Code = code;
+	SET statusRef.Text = text;
+	SET statusRef.Severity = severity;
+	SET statusRef.Type = statusType;
+	SET statusRef.Description = text;
+	SET statusRef.Source = source;
+END;

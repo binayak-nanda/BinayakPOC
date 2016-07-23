@@ -1,0 +1,5 @@
+CREATE PROCEDURE BuildPolicyKey(IN outXML REFERENCE, IN policyValue CHARACTER, IN includesCompany BOOLEAN)
+BEGIN
+	DECLARE useNameSpace BOOLEAN TRUE;
+	CALL BuildPolicyKeyNameSpace(outXML, policyValue, includesCompany, useNameSpace);
+END;

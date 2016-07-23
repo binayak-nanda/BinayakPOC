@@ -1,0 +1,8 @@
+CREATE PROCEDURE Test()
+BEGIN
+	
+	DECLARE tmpDate CHARACTER;
+	
+	SET tmpDate = 'xyz';
+	
+END;

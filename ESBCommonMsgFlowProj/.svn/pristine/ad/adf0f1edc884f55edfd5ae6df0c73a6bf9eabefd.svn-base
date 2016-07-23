@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmFlowOrder.msgnode="ComIbmFlowOrder.msgnode" xmlns:ComIbmPassthru.msgnode="ComIbmPassthru.msgnode" xmlns:ComIbmResetContentDescriptor.msgnode="ComIbmResetContentDescriptor.msgnode" xmlns:ComIbmWSInput.msgnode="ComIbmWSInput.msgnode" xmlns:ESBHTTPErrorReply.msgflow="ESBHTTPErrorReply.msgflow" xmlns:ESBLogFeeder.msgflow="ESBLogFeeder.msgflow" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow"
+    xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="ESBHTTPInput.msgflow"
+    nsPrefix="ESBHTTPInput.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.TraceLevel" name="TraceLevel" lowerBound="1" defaultValueLiteral="[Set to 'ON' or 'OFF']">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.ServiceName" name="ServiceName" lowerBound="1" defaultValueLiteral="[Set to  service name]">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.ProjectName" name="ProjectName" lowerBound="1" defaultValueLiteral="[Set to project name]">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SourceDestination" name="SourceDestination" lowerBound="1" defaultValueLiteral="[Set to source destination name]">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Server" name="Server" lowerBound="1" defaultValueLiteral="[Set to server name]">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Direction" name="Direction" lowerBound="1" defaultValueLiteral="Request">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.URLSpecifier" name="URLSpecifier" lowerBound="1" defaultValueLiteral="[mandatory]">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Main.SetESBEventProperties.ESQLModule" name="Main.SetESBEventProperties.ESQLModule" defaultValueLiteral="esql://routine/#ESBLogFeeder_DefaultESQLModule.Main">
+      <eType xmi:type="ecore:EDataType" href="http://www.ibm.com/wbi/2005/eflow#//EsqlModule"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Catch.SetESBEventProperties.ESQLModule" name="Catch.SetESBEventProperties.ESQLModule" defaultValueLiteral="esql://routine/#ESBLogFeeder_DefaultESQLModule.Main">
+      <eType xmi:type="ecore:EDataType" href="http://www.ibm.com/wbi/2005/eflow#//EsqlModule"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageDomainProperty" name="messageDomainProperty">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageFormatProperty" name="messageFormatProperty">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageSetProperty" name="messageSetProperty">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.messageTypeProperty" name="messageTypeProperty">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.validateTiming" name="validateTiming" lowerBound="1" eType="//@eClassifiers.1" defaultValueLiteral="immediate"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.parserXmlnscCommentsRetainMode" name="parserXmlnscCommentsRetainMode" lowerBound="1" eType="//@eClassifiers.2" defaultValueLiteral="none"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.parserXmlnscMixedContentRetainMode" name="parserXmlnscMixedContentRetainMode" lowerBound="1" eType="//@eClassifiers.3" defaultValueLiteral="none"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.parserXmlnscProcessingInstructionsRetainMode" name="parserXmlnscProcessingInstructionsRetainMode" lowerBound="1" eType="//@eClassifiers.4" defaultValueLiteral="none"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.parserXmlnscUseForXmlnsDomain" name="parserXmlnscUseForXmlnsDomain" lowerBound="1" defaultValueLiteral="false">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.validateFailureAction" name="validateFailureAction" lowerBound="1" eType="//@eClassifiers.5" defaultValueLiteral="exception"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.validateMaster" name="validateMaster" lowerBound="1" eType="//@eClassifiers.6" defaultValueLiteral="none"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.LogMessageHeader" name="LogMessageHeader" lowerBound="1">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="ESBHTTPInput" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj16/ESBHTTPInput.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/ESBCommonMsgFlowProj/icons/full/obj30/ESBHTTPInput.gif"/>
+    <composition>
+      <nodes xmi:type="ComIbmWSInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="13,100" URLSpecifier="[mandatory]" validateTiming="immediate">
+        <translation xmi:type="utility:ConstantString" string="HTTP Input"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="243,1">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Failure" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output1" location="442,178">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Business%20Flow" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="ComIbmPassthru.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="161,100" label="$MQSI ESBHTTPInput Version=1.0 MQSI$">
+        <translation xmi:type="utility:ConstantString" string="Passthrough"/>
+      </nodes>
+      <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="278,100">
+        <translation xmi:type="utility:ConstantString" string="FlowOrder1"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_7" location="376,100" computeExpression="esql://routine/#MapHTTPOutToCommonEvent.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="Map HTTP Out to Common Event"/>
+      </nodes>
+      <nodes xmi:type="ESBLogFeeder.msgflow:FCMComposite_1" xmi:id="FCMComposite_1_9" location="560,96">
+        <translation xmi:type="utility:ConstantString" string="Call ESBLogFeeder"/>
+      </nodes>
+      <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="109,313">
+        <translation xmi:type="utility:ConstantString" string="FlowOrder"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="275,256" computeExpression="esql://routine/#MapHTTPCatchToCommonEvent.Main">
+        <translation xmi:type="utility:ConstantString" string="Map HTTP Catch to Common Event"/>
+      </nodes>
+      <nodes xmi:type="ESBHTTPErrorReply.msgflow:FCMComposite_1" xmi:id="FCMComposite_1_4" location="161,427">
+        <translation xmi:type="utility:ConstantString" string="ESBHTTPErrorReply"/>
+      </nodes>
+      <nodes xmi:type="ESBLogFeeder.msgflow:FCMComposite_1" xmi:id="FCMComposite_1_8" location="625,257">
+        <translation xmi:type="utility:ConstantString" string="ESBLogFeeder"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output2" location="469,321">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Catch" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+      </nodes>
+      <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_10" location="220,313">
+        <translation xmi:type="utility:ConstantString" string="FlowOrder2"/>
+      </nodes>
+      <nodes xmi:type="ComIbmFlowOrder.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_11" location="85,38">
+        <translation xmi:type="utility:ConstantString" string="FlowOrder3"/>
+      </nodes>
+      <nodes xmi:type="ComIbmResetContentDescriptor.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_12" location="257,39" messageDomain="BLOB" resetMessageDomain="true">
+        <translation xmi:type="utility:ConstantString" string="ResetContentDescriptor"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_13" location="374,18" computeExpression="esql://routine/#MapHTTPFailureToCommonEvent.Main">
+        <translation xmi:type="utility:ConstantString" string="Map HTTP Failure to Common Event"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_7" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.first" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="OutTerminal.Output1" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.second" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.catch" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.second" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_12" targetNode="FCMComposite_1_10" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.first" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_13" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_10" sourceTerminalName="OutTerminal.first" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_14" targetNode="OutTerminal.Output2" sourceNode="FCMComposite_1_10" sourceTerminalName="OutTerminal.second" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_11" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_16" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.second" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_17" targetNode="FCMComposite_1_12" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.first" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_13" sourceNode="FCMComposite_1_12" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_11" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_13" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.TraceLevel">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.TraceLevel" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+        <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.ServiceName">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.ServiceName" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+          <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.ProjectName">
+            <propertyName xmi:type="utility:TranslatableString" key="Property.ProjectName" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+            <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.SourceDestination">
+              <propertyName xmi:type="utility:TranslatableString" key="Property.SourceDestination" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+              <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.Server">
+                <propertyName xmi:type="utility:TranslatableString" key="Property.Server" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+                <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.Direction">
+                  <propertyName xmi:type="utility:TranslatableString" key="Property.Direction" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+                  <propertyDescriptor groupName="Group.HTTPInput.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.URLPropertyEditor" configurable="true" describedAttribute="Property.URLSpecifier">
+                    <propertyName xmi:type="utility:TranslatableString" key="Property.URLSpecifier" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                    <propertyDescriptor groupName="Group.Custom.Settings" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.EsqlModulePropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.EsqlModulePropertyCompiler" describedAttribute="Property.Main.SetESBEventProperties.ESQLModule">
+                      <propertyName xmi:type="utility:TranslatableString" key="Property.Main.SetESBEventProperties.ESQLModule" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+                      <propertyDescriptor groupName="Group.Custom.Settings" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.EsqlModulePropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.EsqlModulePropertyCompiler" describedAttribute="Property.Catch.SetESBEventProperties.ESQLModule">
+                        <propertyName xmi:type="utility:TranslatableString" key="Property.Catch.SetESBEventProperties.ESQLModule" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+                        <propertyDescriptor groupName="Group.HTTPInput.InputMessageParsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageDomainPropertyEditor" describedAttribute="Property.messageDomainProperty">
+                          <propertyName xmi:type="utility:TranslatableString" key="Property.messageDomainProperty" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                          <propertyDescriptor groupName="Group.HTTPInput.InputMessageParsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageFormatPropertyEditor" describedAttribute="Property.messageFormatProperty">
+                            <propertyName xmi:type="utility:TranslatableString" key="Property.messageFormatProperty" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                            <propertyDescriptor groupName="Group.HTTPInput.InputMessageParsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageSetNamePropertyEditor" describedAttribute="Property.messageSetProperty">
+                              <propertyName xmi:type="utility:TranslatableString" key="Property.messageSetProperty" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                              <propertyDescriptor groupName="Group.HTTPInput.InputMessageParsing" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.MRMessageTypePropertyEditor" describedAttribute="Property.messageTypeProperty">
+                                <propertyName xmi:type="utility:TranslatableString" key="Property.messageTypeProperty" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                <propertyDescriptor groupName="Group.HTTPInput.ParserOption" describedAttribute="Property.validateTiming">
+                                  <propertyName xmi:type="utility:TranslatableString" key="Property.validateTiming" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                  <propertyDescriptor groupName="Group.HTTPInput.ParserOption" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.XmlnscPropertyEditor" describedAttribute="Property.parserXmlnscCommentsRetainMode">
+                                    <propertyName xmi:type="utility:TranslatableString" key="Property.parserXmlnscCommentsRetainMode" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                    <propertyDescriptor groupName="Group.HTTPInput.ParserOption" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.XmlnscPropertyEditor" describedAttribute="Property.parserXmlnscMixedContentRetainMode">
+                                      <propertyName xmi:type="utility:TranslatableString" key="Property.parserXmlnscMixedContentRetainMode" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                      <propertyDescriptor groupName="Group.HTTPInput.ParserOption" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.XmlnscPropertyEditor" describedAttribute="Property.parserXmlnscProcessingInstructionsRetainMode">
+                                        <propertyName xmi:type="utility:TranslatableString" key="Property.parserXmlnscProcessingInstructionsRetainMode" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                        <propertyDescriptor groupName="Group.HTTPInput.ParserOption" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.XmlnsMessageDomainPropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.BooleanPropertyCompiler" describedAttribute="Property.parserXmlnscUseForXmlnsDomain">
+                                          <propertyName xmi:type="utility:TranslatableString" key="Property.parserXmlnscUseForXmlnsDomain" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                          <propertyDescriptor groupName="Group.HTTPInput.validate" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.ValidateMasterListenerPropertyEditor" describedAttribute="Property.validateFailureAction">
+                                            <propertyName xmi:type="utility:TranslatableString" key="Property.validateFailureAction" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                            <propertyDescriptor groupName="Group.HTTPInput.validate" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.ValidateMasterForOpaqueParsingAndBuildTreePropertyEditor" configurable="true" describedAttribute="Property.validateMaster">
+                                              <propertyName xmi:type="utility:TranslatableString" key="Property.validateMaster" bundleName="ComIbmWSInput" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                              <propertyDescriptor groupName="Group.Custom.Settings" configurable="true" userDefined="true" describedAttribute="Property.LogMessageHeader">
+                                                <propertyName xmi:type="utility:TranslatableString" key="Property.LogMessageHeader" bundleName="ESBHTTPInput" pluginId="ESBCommonMsgFlowProj"/>
+                                              </propertyDescriptor>
+                                            </propertyDescriptor>
+                                          </propertyDescriptor>
+                                        </propertyDescriptor>
+                                      </propertyDescriptor>
+                                    </propertyDescriptor>
+                                  </propertyDescriptor>
+                                </propertyDescriptor>
+                              </propertyDescriptor>
+                            </propertyDescriptor>
+                          </propertyDescriptor>
+                        </propertyDescriptor>
+                      </propertyDescriptor>
+                    </propertyDescriptor>
+                  </propertyDescriptor>
+                </propertyDescriptor>
+              </propertyDescriptor>
+            </propertyDescriptor>
+          </propertyDescriptor>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.URLSpecifier" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.URLSpecifier"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.Main.SetESBEventProperties.ESQLModule" overriddenNodes="FCMComposite_1_9">
+      <overriddenAttribute href="ESBLogFeeder.msgflow#Property.SetESBEventProperties.ESQLModule"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.Catch.SetESBEventProperties.ESQLModule" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="ESBLogFeeder.msgflow#Property.SetESBEventProperties.ESQLModule"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageDomainProperty" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.messageDomainProperty"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageFormatProperty" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.messageFormatProperty"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageSetProperty" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.messageSetProperty"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.messageTypeProperty" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.messageTypeProperty"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.validateTiming" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.validateTiming"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.parserXmlnscCommentsRetainMode" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.parserXmlnscCommentsRetainMode"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.parserXmlnscMixedContentRetainMode" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.parserXmlnscMixedContentRetainMode"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.parserXmlnscProcessingInstructionsRetainMode" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.parserXmlnscProcessingInstructionsRetainMode"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.parserXmlnscUseForXmlnsDomain" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.parserXmlnscUseForXmlnsDomain"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.validateFailureAction" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.validateFailureAction"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.validateMaster" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmWSInput.msgnode#Property.validateMaster"/>
+    </attributeLinks>
+  </eClassifiers>
+  <eClassifiers xmi:type="ecore:EEnum">
+    <eLiterals xmi:id="validateTiming.deferred" name="deferred"/>
+    <eLiterals xmi:id="validateTiming.immediate" name="immediate" value="1"/>
+    <eLiterals xmi:id="validateTiming.complete" name="complete" value="2"/>
+  </eClassifiers>
+  <eClassifiers xmi:type="ecore:EEnum">
+    <eLiterals xmi:id="parserXmlnscCommentsRetainMode.none" name="none"/>
+    <eLiterals xmi:id="parserXmlnscCommentsRetainMode.all" name="all" value="1"/>
+  </eClassifiers>
+  <eClassifiers xmi:type="ecore:EEnum">
+    <eLiterals xmi:id="parserXmlnscMixedContentRetainMode.none" name="none"/>
+    <eLiterals xmi:id="parserXmlnscMixedContentRetainMode.all" name="all" value="1"/>
+  </eClassifiers>
+  <eClassifiers xmi:type="ecore:EEnum">
+    <eLiterals xmi:id="parserXmlnscProcessingInstructionsRetainMode.none" name="none"/>
+    <eLiterals xmi:id="parserXmlnscProcessingInstructionsRetainMode.all" name="all" value="1"/>
+  </eClassifiers>
+  <eClassifiers xmi:type="ecore:EEnum">
+    <eLiterals xmi:id="validateFailureAction.userTrace" name="userTrace"/>
+    <eLiterals xmi:id="validateFailureAction.localError" name="localError" value="1"/>
+    <eLiterals xmi:id="validateFailureAction.exception" name="exception" value="2"/>
+    <eLiterals xmi:id="validateFailureAction.exceptionList" name="exceptionList" value="3"/>
+  </eClassifiers>
+  <eClassifiers xmi:type="ecore:EEnum">
+    <eLiterals xmi:id="validateMaster.none" name="none"/>
+    <eLiterals xmi:id="validateMaster.contentAndValue" name="contentAndValue" value="1"/>
+    <eLiterals xmi:id="validateMaster.content" name="content" value="2"/>
+  </eClassifiers>
+</ecore:EPackage>

@@ -1,0 +1,32 @@
+CREATE COMPUTE MODULE MapHTTPRequestFailureToCommonEvent
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+				
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+        DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+        
+        DECLARE envRef REFERENCE TO Environment;
+        DECLARE excpListPath REFERENCE TO InputExceptionList.*[1];
+        
+        SET Environment.Variables.QBE.ESBEvent.Event.Role = 'error';
+        
+        DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+        
+        IF (envRef.Variables.CommonInfoMappedFlag <> TRUE) THEN
+        	CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+        END IF;
+               
+		SET eventRef.MessageContext.MessageId             = '';
+		SET eventRef.MessageContext.CorrelationId         = InputLocalEnvironment.Destination.HTTP.RequestIdentifier;
+		SET eventRef.MessageContext.Destination.Transport = 'SOAP-HTTP';	
+		SET eventRef.MessageContext.Destination.Name      = InputLocalEnvironment.Destination.HTTP.RequestURL;
+		SET eventRef.MessageContext.Destination.Type      = 'HTTP Request';
+		CALL MapErrorToCommonEvent(envRef, excpListPath);
+			
+		SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		RETURN TRUE;
+	END;
+
+END MODULE;

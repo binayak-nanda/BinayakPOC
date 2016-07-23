@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MessagePool xmlns="http://wwww.ibm.com/iib/test/1.0.0">
+    <MQInputMessage timestamp="1457068153853" nodeId="FCMComposite_1_1" name="ReadCache" id="1457068153853-7">
+        <plainText>%3C%3Fxml+version%3D%221.0%22+encoding%3D%22UTF-8%22%3F%3E%0D%0A%3CMaps%3E%0D%0A%3CMap+name%3D%22Map1%22%3E%0D%0A%3CEntry+key%3D%22Key1%22%3EValue1%3C%2FEntry%3E%0D%0A%3C%2FMap%3E%0D%0A%3CMap+name%3D%22Map2%22%3E%0D%0A%3CEntry+key%3D%22Key2%22%3EValue2%3C%2FEntry%3E%0D%0A%3CEntry+key%3D%22Key3%22%3EValue3%3C%2FEntry%3E%0D%0A%3C%2FMap%3E%3C%2FMaps%3E</plainText>
+        <MessageHeader backoutCount="0" characterSet="0" encoding="0" expiry="-1" feedback="0" messageFlags="0" messageType="8" messageSequenceNumber="1" offset="0" originalLength="-1" persistence="2" priority="-1" putApplicationType="0" report="0"/>
+    </MQInputMessage>
+</MessagePool>

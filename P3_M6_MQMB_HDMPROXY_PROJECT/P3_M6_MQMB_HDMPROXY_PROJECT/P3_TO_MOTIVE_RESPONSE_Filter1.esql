@@ -1,0 +1,23 @@
+BROKER SCHEMA P3_M6_MQMB_HDMPROXY_PROJECT
+
+
+CREATE FILTER MODULE P3_TO_MOTIVE_RESPONSE_Filter1
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+        DECLARE REQ CHAR;
+        SET REQ = LocalEnvironment.Variables.RequestType;
+        DECLARE status CHAR;
+        SET status =  Root.XMLNSC.HDMProxyResponse.Response.Status ;
+        
+		IF ( status = 'Pass' OR status='Fail') AND ( REQ= 'Create' OR REQ = 'Disconnect') THEN
+			-- Going to ASAP_REQ
+			RETURN TRUE;
+		END IF;
+		IF ( status = 'Pass' OR status='Fail') AND (REQ= 'CreateCascade' OR REQ = 'DisconnectCascade' ) THEN
+			-- Going to P3
+			RETURN FALSE;
+		END IF;  
+				
+	END;
+
+END MODULE;

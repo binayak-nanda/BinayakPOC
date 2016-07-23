@@ -1,0 +1,28 @@
+CREATE PROCEDURE setErrorMessage(IN outputRoot REFERENCE, IN outputLocalEnvironment REFERENCE, IN environment REFERENCE, IN message char, IN messageCode INTEGER)
+	/*******************************************************************************
+  	* A procedure is to setup HTTP SOAP error response message 
+  	* 
+  	* 
+  	* IN outputLocalEnvironment: OutputLocalEnvironment to be modified.
+  	* IN environment: Environment
+  	* IN outputRoot: OutputRoot
+  	* IN message: error message
+  	* IN messageCode: error message number
+  	* IN nsc: namespace string
+  	*******************************************************************************/
+	BEGIN
+		DECLARE destination CHARACTER;	
+		IF ((outputLocalEnvironment.Destination.HTTP.RequestURL IS NULL) OR (outputLocalEnvironment.Destination.HTTP.RequestURL = '')) THEN
+			SET destination = environment.Variables.Properties.SourceDestination;
+		ELSE
+			SET destination = outputLocalEnvironment.Destination.HTTP.RequestURL;
+		END IF;
+		DELETE FIELD outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.*[<];
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultcode = 'ns:ESBFault';
+    	/*SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultcode.(XMLNSC.NamespaceDecl)xmlns:ns = qbe;*/
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultstring = message;
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultactor = destination;
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.detail.qbe:ESBFault.qbe:code = messageCode;
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.detail.qbe:ESBFault.qbe:message = message;
+    	SET outputLocalEnvironment.Destination.HTTP.ReplyStatusCode = 500;
+    END;

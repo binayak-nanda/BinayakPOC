@@ -1,0 +1,26 @@
+CREATE PROCEDURE BuildPolicyKeyNameSpace(IN outXML REFERENCE, IN policyValue CHARACTER, IN includesCompany BOOLEAN, IN useNameSpace BOOLEAN)
+BEGIN	
+	DECLARE policyKeyRef REFERENCE TO outXML;
+
+	IF useNameSpace THEN
+		CREATE FIELD outXML.qbe:PolicyKey;
+		MOVE policyKeyRef TO outXML.qbe:PolicyKey;
+	ELSE 
+		CREATE FIELD outXML.PolicyKey;
+		MOVE policyKeyRef TO outXML.PolicyKey;
+	END IF;
+
+	DECLARE branchIndex INTEGER 1;
+
+	IF includesCompany THEN
+		SET policyKeyRef.qbe:Company = SUBSTRING(policyValue FROM 1 FOR 1);
+		SET branchIndex = 2;
+	ELSE 
+		SET policyKeyRef.qbe:Company = '1';
+	END IF;
+	
+	SET policyKeyRef.qbe:Branch = SUBSTRING(policyValue FROM branchIndex FOR 2);
+	SET policyKeyRef.qbe:Policy = SUBSTRING(policyValue FROM branchIndex + 2 FOR 7);
+	SET policyKeyRef.qbe:Type = SUBSTRING(policyValue FROM branchIndex + 9 FOR 3);
+	
+END;

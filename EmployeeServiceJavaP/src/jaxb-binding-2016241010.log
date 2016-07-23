@@ -1,0 +1,9 @@
+Running command...
+E:\IBM\IIB\10.0.959.2\common\jdk\bin\xjc.exe -d "E:\IIBT10\workspace\EmployeeServiceJavaP\src" -p "com.ibm.betaworks" "E:\IIBT10\workspace\EmployeeServiceInterface\sample\iibadmin\SAMPLE_EMPLOYEE.xsd" 
+parsing a schema...
+compiling a schema...
+com\ibm\betaworks\DBRespType.java
+com\ibm\betaworks\EMPLOYEEType.java
+com\ibm\betaworks\EmployeeResponseType.java
+com\ibm\betaworks\ObjectFactory.java
+com\ibm\betaworks\package-info.java

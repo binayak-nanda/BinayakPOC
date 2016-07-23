@@ -1,0 +1,34 @@
+CREATE COMPUTE MODULE TestServerAddFlow_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		 CALL CopyMessageHeaders();
+		 CALL CopyEntireMessage();
+		SET OutputRoot.MQMD.CorrelId = InputRoot.MQMD.MsgId ;
+		DECLARE NO1 INTEGER ;
+		DECLARE NO2 INTEGER ;
+		DECLARE Add INTEGER ;
+		
+		SET NO1 = CAST(InputRoot.XMLNSC.MathOperation.No1 AS INTEGER) ;
+		SET NO2 = CAST(InputRoot.XMLNSC.MathOperation.No1 AS INTEGER) ;
+		SET Add = NO1+NO2 ;
+		
+		DECLARE Msg REFERENCE TO InputRoot.XMLNSC.MathOperation ;
+		CREATE LASTCHILD OF Msg DOMAIN('XMLNSC')		
+		 
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

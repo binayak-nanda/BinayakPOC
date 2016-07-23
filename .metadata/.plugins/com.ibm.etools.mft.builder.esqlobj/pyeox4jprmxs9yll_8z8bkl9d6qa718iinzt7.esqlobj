@@ -1,0 +1,8 @@
+CREATE PROCEDURE getCharValueInBooleanChar(IN bool CHARACTER) RETURNS CHARACTER
+BEGIN		
+	IF bool IS NOT NULL AND (UPPER(bool) = 'TRUE' OR UPPER(bool) = 'Y' OR UPPER(bool) = 'YES') THEN
+		RETURN 'true';  --Leave as lower case. Used for AON.
+	ELSE
+		RETURN 'false';
+	END IF;		
+END;

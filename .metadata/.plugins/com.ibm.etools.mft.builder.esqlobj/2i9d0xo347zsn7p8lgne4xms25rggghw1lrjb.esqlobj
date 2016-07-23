@@ -1,0 +1,38 @@
+CREATE PROCEDURE CompressFloodRfh2Usr(IN OutputRoot REFERENCE) 
+BEGIN	
+
+
+	IF FIELDNAME (OutputRoot.MQRFH2.usr.QBESearchAddress) IS NOT NULL THEN 
+		SET OutputRoot.MQRFH2.usr.flat_QBESearchAddress = XMLNSCFolderToString(OutputRoot.MQRFH2.usr.QBESearchAddress);
+		DELETE FIELD OutputRoot.MQRFH2.usr.QBESearchAddress;
+	END IF;
+
+	IF FIELDNAME (OutputRoot.MQRFH2.usr.PartnerSearchAddress1) IS NOT NULL THEN 
+		SET OutputRoot.MQRFH2.usr.flat_PartnerSearchAddress1 = XMLNSCFolderToString(OutputRoot.MQRFH2.usr.PartnerSearchAddress1);
+		DELETE FIELD OutputRoot.MQRFH2.usr.PartnerSearchAddress1;
+	END IF;
+
+	IF FIELDNAME (OutputRoot.MQRFH2.usr.OriginalRequest) IS NOT NULL THEN 
+		SET OutputRoot.MQRFH2.usr.flat_OriginalRequest = XMLNSCFolderToString(OutputRoot.MQRFH2.usr.OriginalRequest);
+		DELETE FIELD OutputRoot.MQRFH2.usr.OriginalRequest;
+	END IF;
+	
+	IF FIELDNAME (OutputRoot.MQRFH2.usr.LocationInfoValRetrieveResponse) IS NOT NULL THEN 
+		SET OutputRoot.MQRFH2.usr.flat_LocationInfoValRetrieveResponse = XMLNSCFolderToString(OutputRoot.MQRFH2.usr.LocationInfoValRetrieveResponse);
+		DELETE FIELD OutputRoot.MQRFH2.usr.LocationInfoValRetrieveResponse;
+	END IF;
+
+	IF FIELDNAME (OutputRoot.MQRFH2.usr.SARStructuredAddress) IS NOT NULL THEN 
+		SET OutputRoot.MQRFH2.usr.flat_SARStructuredAddress = XMLNSCFolderToString(OutputRoot.MQRFH2.usr.SARStructuredAddress);
+		DELETE FIELD OutputRoot.MQRFH2.usr.SARStructuredAddress;
+	END IF;
+
+	IF FIELDNAME (OutputRoot.MQRFH2.usr.ratingZone) IS NOT NULL THEN 
+		SET OutputRoot.MQRFH2.usr.flat_ratingZone = XMLNSCFolderToString(OutputRoot.MQRFH2.usr.ratingZone);
+		DELETE FIELD OutputRoot.MQRFH2.usr.ratingZone;
+	END IF;
+
+--		LOG EVENT VALUES ('OutputRoot.MQRFH2.usr.flat_QBESearchAddress:', OutputRoot.MQRFH2.usr.flat_QBESearchAddress);
+--		LOG EVENT VALUES ('OutputRoot.MQRFH2.usr.flat_OriginalRequest:', OutputRoot.MQRFH2.usr.flat_OriginalRequest);
+
+END;

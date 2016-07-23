@@ -1,0 +1,92 @@
+
+CREATE COMPUTE MODULE MapHTTPOutToCommonEvent
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+				
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+        DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+        DECLARE payloadBlob BLOB '';
+        
+        DECLARE envRef REFERENCE TO Environment;
+        
+        CALL LoadProperties(envRef);
+        
+        SET Environment.Variables.QBE.ESBEvent.Event.Role = 'info';
+        
+        DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+        
+        CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+                
+		SET eventRef.MessageContext.MessageId             = '';
+		SET eventRef.MessageContext.CorrelationId         = InputLocalEnvironment.Destination.HTTP.RequestIdentifier;
+		SET eventRef.MessageContext.Destination.Transport = 'SOAP-HTTP';	
+		SET eventRef.MessageContext.Destination.Name      = envRef.Variables.Properties.SourceDestination;
+		SET eventRef.MessageContext.Destination.Type      = 'HTTP Input';
+
+  	    /* Copy the message body if it exists. */
+		
+			-- SET eventRef.MessageContext.Payload = ASBITSTREAM(InputBody ENCODING InputRoot.Properties.Encoding CCSID InputRoot.Properties.CodedCharSetId);
+            -- SET payloadBlob = ASBITSTREAM(InputRoot.*[<] ENCODING InputRoot.Properties.Encoding CCSID InputRoot.Properties.CodedCharSetId); 
+			-- DECLARE msgBody BLOB ASBITSTREAM(InputRoot, InputRoot.Properties.Encoding, InputRoot.Properties.CodedCharSetId);
+            -- DECLARE charMsgBody CHAR CAST(msgBody AS CHAR CCSID InputProperties.CodedCharSetId); 
+			
+			-- SET payloadBlob = ASBITSTREAM(InputRoot.*[<] CCSID InputRoot.Properties.CodedCharSetId); 
+		
+		SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		
+		RETURN TRUE;
+	END;
+
+END MODULE;
+
+CREATE COMPUTE MODULE ESBHTTPInput_DefaultESQLModule
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+	RETURN TRUE;
+	END;
+END MODULE;
+
+
+CREATE COMPUTE MODULE MapHTTPFailureToCommonEvent
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET OutputRoot = InputRoot;
+		
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+        DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+        
+        DECLARE envRef REFERENCE TO Environment;
+        
+        CALL LoadProperties(envRef);
+
+		--GQ - Noticed this needs to be set before calling MapCommonInfoToCommonEvent
+        SET Environment.Variables.QBE.ESBEvent.Event.Role = 'error';
+        SET Environment.Variables.LogPoint = 'failure';
+						
+        DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+        
+-- Not setting Service Name or Broker with this statement, so removing it. 
+--IF (envRef.Variables.CommonInfoMappedFlag <> TRUE) THEN
+	        CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+--        END IF;        
+		
+		SET eventRef.MessageContext.MessageId             = '';
+		SET eventRef.MessageContext.CorrelationId         = COALESCE(InputLocalEnvironment.Destination.HTTP.RequestIdentifier, '');
+		SET eventRef.MessageContext.Destination.Transport = 'SOAP-HTTP';	
+		SET eventRef.MessageContext.Destination.Name      = COALESCE(envRef.Variables.Properties.SourceDestination, '');
+		SET eventRef.MessageContext.Destination.Type      = 'HTTP Input';
+
+		DECLARE excpListPath REFERENCE TO InputExceptionList.*[1];		
+		CALL MapErrorToCommonEvent(envRef, excpListPath);
+		
+		SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		
+		RETURN TRUE;
+
+	END;
+
+END MODULE;

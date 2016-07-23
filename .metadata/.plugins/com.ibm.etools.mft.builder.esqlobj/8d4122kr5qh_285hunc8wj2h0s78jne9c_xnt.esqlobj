@@ -1,0 +1,18 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		
+		DECLARE deliveryCount INT 0;
+		DECLARE outputResult BOOLEAN FALSE;
+		
+		SET deliveryCount = Root.JMSTransport.Transport_Folders.Standard_Properties.JMSXDeliveryCount;
+		
+		IF (deliveryCount = 3) THEN
+			SET outputResult = TRUE;
+		ELSE
+			SET outputResult = FALSE;
+		END IF;
+		
+		
+		RETURN outputResult;
+	END;
+

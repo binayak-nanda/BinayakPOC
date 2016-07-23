@@ -1,0 +1,8 @@
+CREATE PROCEDURE GetPolicyKeyWithCompanyNoNS(IN policyKeyRef REFERENCE) RETURNS CHARACTER
+BEGIN	
+	DECLARE policyKey CHARACTER NULL;
+
+	SET policyKey = GetPolicyCompany(policyKeyRef.Company) || GetPolicyKeyNoNS(policyKeyRef);
+	
+	RETURN policyKey;	
+END;

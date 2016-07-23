@@ -1,0 +1,16 @@
+CREATE PROCEDURE getStringBooleanValueAsYN(IN value CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR '';
+	
+	IF value IS NULL THEN
+		SET bool = '';
+	ELSE 
+		IF upper(value) = 'TRUE' or value = '1' THEN
+			SET bool = 'Y';
+		ELSE 
+			SET bool = 'N';
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;

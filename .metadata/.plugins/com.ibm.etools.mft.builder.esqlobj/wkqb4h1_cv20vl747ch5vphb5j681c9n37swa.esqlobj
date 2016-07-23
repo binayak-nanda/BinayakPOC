@@ -1,0 +1,5 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		RETURN ReplyOnFailureJMS; -- This is a UDP.
+	END;
+

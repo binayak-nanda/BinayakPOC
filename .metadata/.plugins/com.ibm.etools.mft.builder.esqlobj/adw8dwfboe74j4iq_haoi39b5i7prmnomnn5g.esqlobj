@@ -1,0 +1,13 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		SET OutputRoot = InputRoot;
+		IF OutputRoot.JMSTransport.Transport_Folders.Application_Properties.Count IS NOT NULL THEN 
+			RETURN TRUE;
+		ELSE
+			CREATE LASTCHILD OF OutputRoot.JMSTransport.Transport_Folders.Application_Properties NAME 'Count' VALUE '1';
+			PROPAGATE TO TERMINAL 'out1' ;
+			RETURN FALSE;
+		END IF;	
+		RETURN TRUE;
+	END;
+

@@ -1,0 +1,37 @@
+CREATE PROCEDURE MapErrorToCommonEvent(INOUT envRef REFERENCE, INOUT excpListPath REFERENCE)
+	BEGIN
+
+        DECLARE eventRef REFERENCE TO envRef.Variables.QBE.ESBEvent.Event;
+        
+		DECLARE i INTEGER 1;
+		
+		/* Loop till the last child */
+		WHILE (CARDINALITY(excpListPath.*[]) > 0) DO
+		
+		    /* Check if exception number is available */
+		    IF (excpListPath.Number IS NOT NULL) THEN
+		
+		        /* Store the current exception details */
+		        SET eventRef.ErrorInfo.Error[i].ServiceName VALUE    = COALESCE(envRef.Variables.Properties.ServiceName, 'default');
+		        SET eventRef.ErrorInfo.Error[i].Timestamp VALUE       = CAST(CURRENT_GMTTIMESTAMP AS CHAR FORMAT 'IU');
+		        SET eventRef.ErrorInfo.Error[i].ErrorCode VALUE       = excpListPath.Number;
+		        SET eventRef.ErrorInfo.Error[i].ErrorText VALUE       = excpListPath.Text;
+		        SET eventRef.ErrorInfo.Error[i].ErrorSeverity  VALUE  = excpListPath.Severity;
+		        SET eventRef.ErrorInfo.Error[i].ErrorType  VALUE      = 'system';
+                CALL ConstructErrorDetailDescription(excpListPath) INTO eventRef.ErrorInfo.Error[i].ErrorDescription;
+                IF excpListPath.Label <> '' THEN
+                	SET eventRef.ErrorInfo.Error[i].ErrorSource VALUE  = excpListPath.Label;
+                ELSE
+                	SET eventRef.ErrorInfo.Error[i].ErrorSource VALUE  = 'Exception';
+                END IF;
+                SET eventRef.ErrorInfo.Error[i].InputData VALUE = NULL;
+		        SET eventRef.ErrorInfo.Error[i].DebugData VALUE = NULL;
+                             
+		    END IF;
+		    
+		    MOVE excpListPath LASTCHILD;
+		    SET i = i + 1;
+		
+		END WHILE;
+
+END;

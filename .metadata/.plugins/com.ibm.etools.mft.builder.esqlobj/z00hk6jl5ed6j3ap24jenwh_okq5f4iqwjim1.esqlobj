@@ -1,0 +1,30 @@
+CREATE PROCEDURE MapBrkExcToStatusInfo(INOUT statusInfoRef REFERENCE, IN excpListPath REFERENCE)
+BEGIN
+
+		DECLARE statusIndRef REFERENCE TO statusInfoRef;
+		
+		/* Loop till the last child */
+		WHILE (CARDINALITY(excpListPath.*[]) > 0) DO
+		
+		    /* Check if exception number is available */
+		    IF (excpListPath.Number IS NOT NULL) THEN
+		    	
+		    	CREATE LASTCHILD OF statusInfoRef NAME 'Status';
+		    	MOVE statusIndRef TO statusInfoRef.Status[<];    	 
+		
+		        /* Store the current exception details */
+		        SET statusIndRef.Timestamp   = CURRENT_TIMESTAMP;
+		        SET statusIndRef.Code        = excpListPath.Number;
+		        SET statusIndRef.Text        = 'A failure has occurred in the Enterprise Service Bus while attempting to process the request';
+		        SET statusIndRef.Severity    = 'Error'; --excpListPath.Severity;
+		        SET statusIndRef.Type        = 'System';
+                CALL ConstructErrorDetailDescription(excpListPath) INTO statusIndRef.Description;
+		        SET statusIndRef.Source      = 'ESB';
+                             
+		    END IF;
+		    
+		    MOVE excpListPath LASTCHILD;
+				
+		END WHILE;	
+	
+END;

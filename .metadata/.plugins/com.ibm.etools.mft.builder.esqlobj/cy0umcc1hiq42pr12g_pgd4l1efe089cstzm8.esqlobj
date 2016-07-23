@@ -1,0 +1,16 @@
+CREATE PROCEDURE getBooleanValueInBoolean(IN value BOOLEAN) RETURNS CHARACTER
+BEGIN
+	DECLARE bool CHAR '';
+	
+	IF value IS NULL THEN
+		SET bool = NULL;
+	ELSE 
+		IF value = 'true' THEN
+			SET bool = 'Y';
+		ELSE 
+			SET bool = 'N';
+		END IF;
+	END IF;
+	
+	RETURN bool;		
+END;

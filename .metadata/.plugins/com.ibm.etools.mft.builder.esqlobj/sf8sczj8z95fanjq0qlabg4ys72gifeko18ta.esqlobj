@@ -1,0 +1,7 @@
+CREATE FILTER MODULE ESBMQFailureOutputLogicRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		RETURN ESBMQFailureOutputLogicFlag; -- This is a UDP.
+	END;
+
+END MODULE;

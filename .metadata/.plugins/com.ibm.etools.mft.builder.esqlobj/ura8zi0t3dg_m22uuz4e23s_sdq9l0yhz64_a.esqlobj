@@ -1,0 +1,12 @@
+CREATE FUNCTION ConvertFlag(pFlag BOOLEAN) RETURNS CHARACTER
+BEGIN
+	
+	DECLARE flagResult CHARACTER 'N';
+	
+	IF (pFlag) THEN 
+	  -- If pFlag is true then set it to 'Y'. Otherwise set it to N.
+	  SET flagResult = 'Y';
+	END IF;		
+
+	RETURN flagResult;
+END;

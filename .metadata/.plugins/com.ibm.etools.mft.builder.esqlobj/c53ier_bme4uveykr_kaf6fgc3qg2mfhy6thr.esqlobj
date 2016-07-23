@@ -1,0 +1,18 @@
+CREATE FUNCTION ConvertStringTimeYYYY_MM_DDTHH_MM_SS_2_StringHHMMSS(IN inTime CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE convertedTime CHARACTER '';
+	
+	IF LENGTH(inTime) >= 19 THEN
+		DECLARE hourStr CHAR;
+		DECLARE minStr CHAR;
+		DECLARE secStr CHAR;
+				
+		SET hourStr = SUBSTRING(inTime FROM 12 FOR 2);
+		SET minStr = SUBSTRING(inTime FROM 15 FOR 2);
+		SET secStr = SUBSTRING(inTime FROM 18 FOR 2);
+		
+		SET convertedTime = hourStr || minStr || secStr;
+	END IF;
+	
+	RETURN convertedTime;
+END;

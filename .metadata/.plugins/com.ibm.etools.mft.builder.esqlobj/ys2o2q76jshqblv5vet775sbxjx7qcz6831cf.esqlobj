@@ -1,0 +1,20 @@
+CREATE FUNCTION ConvertYNToBoolean(flag CHARACTER) RETURNS BOOLEAN
+BEGIN
+	
+	DECLARE flagResult BOOLEAN FALSE;
+	
+--	IF flag NOT IN ('Y','N') THEN
+--	   THROW USER EXCEPTION MESSAGE 9999 VALUES('Boolean character not Y or N.');
+--	END IF;
+	
+	IF flag IS NOT NULL THEN
+		SET flag = UPPER(flag);
+	END IF;
+	
+	IF (flag = 'Y' OR flag = 'YES' ) THEN 
+	  -- If pFlag is 'Y' then set it to true. Otherwise set it to false.
+	  SET flagResult = TRUE;
+	END IF;		
+
+	RETURN flagResult;
+END;

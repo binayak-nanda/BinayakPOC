@@ -1,0 +1,16 @@
+CREATE PROCEDURE AddEventAppContext(IN environmentRef REFERENCE,
+								   IN name CHARACTER,
+								   IN value CHARACTER) 
+BEGIN
+	
+	DECLARE eventRef REFERENCE TO environmentRef.Variables.QBE.ESBEvent.Event;	
+	DECLARE eventCorrelationRef REFERENCE TO eventRef.EventCorrelation;
+	
+	DECLARE appContextIndex INTEGER CARDINALITY(eventCorrelationRef.AppContext[]);
+	
+	SET appContextIndex = appContextIndex + 1;
+	
+	SET eventCorrelationRef.AppContext[appContextIndex].Name  = name;
+ 	SET eventCorrelationRef.AppContext[appContextIndex].Value = value;
+	
+END;

@@ -1,0 +1,8 @@
+CREATE PROCEDURE AddSR010Details2Rfh2(INOUT OutputRoot REFERENCE, IN operation CHARACTER, IN transaction CHARACTER, IN ref CHARACTER, IN account CHARACTER, IN product CHARACTER)
+	BEGIN
+		SET OutputRoot.MQRFH2.usr.SR010.operation = COALESCE(operation, '');
+		SET OutputRoot.MQRFH2.usr.SR010.transaction = COALESCE(transaction, '');
+		SET OutputRoot.MQRFH2.usr.SR010.ref = COALESCE(ref, '');
+		SET OutputRoot.MQRFH2.usr.SR010.account = COALESCE(account, '');
+		SET OutputRoot.MQRFH2.usr.SR010.product = COALESCE(product, '');
+	END;

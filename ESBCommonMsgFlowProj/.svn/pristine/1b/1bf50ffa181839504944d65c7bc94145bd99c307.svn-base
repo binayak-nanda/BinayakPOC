@@ -1,0 +1,99 @@
+DECLARE soapenv NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+
+CREATE COMPUTE MODULE ESBHTTPErrorReplyMessage
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+	    SET OutputRoot = InputRoot;
+	    
+	    DECLARE errorMessage CHARACTER;
+	    DECLARE number INTEGER;
+        CALL getLastExceptionDetail(InputExceptionList, number, errorMessage);
+	    CALL setErrorMessage(OutputRoot, OutputLocalEnvironment, Environment, errorMessage, number); 
+		RETURN TRUE;
+	END;
+END MODULE;
+
+CREATE COMPUTE MODULE SOAPErrorReplyMessage
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE errorMessage CHARACTER;
+	    DECLARE statusCode INTEGER;
+		
+		SET OutputLocalEnvironment = InputLocalEnvironment;	
+		
+		IF EXISTS(InputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault[]) THEN
+			SET errorMessage = InputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultstring;
+			SET statusCode = InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code";
+			SET OutputRoot = InputRoot;
+			CALL setErrorMessage(OutputRoot, OutputLocalEnvironment, Environment, errorMessage, statusCode);
+		ELSEIF EXISTS(InputRoot.XMLNSC.soapenv:Envelope.soapenv:Body[]) THEN
+			SET OutputRoot = InputRoot;
+		ELSE
+	    	SET OutputRoot.Properties = InputRoot.Properties;
+	    	SET OutputRoot.Properties.CodedCharSetId = 1208;
+	    	SET OutputRoot.HTTPReplyHeader."Content-Type" = 'text/xml;charset=utf-8';
+	    	CREATE FIELD OutputRoot.XMLNSC;
+	    	SET errorMessage = 'HTTP error returned for request to ' || InputLocalEnvironment.WrittenDestination.HTTP.RequestURL || ': ' || InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Line";
+	    	SET statusCode = InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code";
+	    	CALL setErrorMessage(OutputRoot, OutputLocalEnvironment, Environment, errorMessage, statusCode); 
+		END IF;
+		RETURN TRUE;
+	END;
+END MODULE;
+
+CREATE PROCEDURE setErrorMessage(IN outputRoot REFERENCE, IN outputLocalEnvironment REFERENCE, IN environment REFERENCE, IN message char, IN messageCode INTEGER)
+	/*******************************************************************************
+  	* A procedure is to setup HTTP SOAP error response message 
+  	* 
+  	* 
+  	* IN outputLocalEnvironment: OutputLocalEnvironment to be modified.
+  	* IN environment: Environment
+  	* IN outputRoot: OutputRoot
+  	* IN message: error message
+  	* IN messageCode: error message number
+  	* IN nsc: namespace string
+  	*******************************************************************************/
+	BEGIN
+		DECLARE destination CHARACTER;	
+		IF ((outputLocalEnvironment.Destination.HTTP.RequestURL IS NULL) OR (outputLocalEnvironment.Destination.HTTP.RequestURL = '')) THEN
+			SET destination = environment.Variables.Properties.SourceDestination;
+		ELSE
+			SET destination = outputLocalEnvironment.Destination.HTTP.RequestURL;
+		END IF;
+		DELETE FIELD outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.*[<];
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultcode = 'ns:ESBFault';
+    	/*SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultcode.(XMLNSC.NamespaceDecl)xmlns:ns = qbe;*/
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultstring = message;
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultactor = destination;
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.detail.qbe:ESBFault.qbe:code = messageCode;
+    	SET outputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.detail.qbe:ESBFault.qbe:message = message;
+    	SET outputLocalEnvironment.Destination.HTTP.ReplyStatusCode = 500;
+    END;
+		
+
+CREATE PROCEDURE getLastExceptionDetail(IN exceptionTree reference, OUT messageNumber INTEGER, OUT messageText char)	
+    /****************************************************************************
+	 * A procedure that will get the details of the last exception from a message
+	 * IN exceptionTree:  The incoming exception list
+	 * OUT messageNumber:  The last message numberr.
+	 * OUT messageText: The last message text.
+	 *****************************************************************************/
+   BEGIN
+	    -- Create a reference to the first child of the exception list
+   	    declare ptrException reference to exceptionTree.*[1];
+   	    DECLARE index INTEGER;
+   	    -- keep looping while the moves to the child of exception list work 
+		WHILE lastmove(ptrException) DO
+			IF ptrException.Number IS NOT NULL THEN
+				SET messageNumber = ptrException.Number;
+				SET messageText = ptrException.Text;
+			END IF;
+			
+			SET index = CARDINALITY(ptrException.Insert[]);
+			IF index > 0 THEN
+  				SET messageText = ptrException.Insert[index].Text;
+			END IF;
+			move ptrException lastchild;
+		END WHILE; 
+	END;

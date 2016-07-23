@@ -1,0 +1,10 @@
+CREATE PROCEDURE GetPolicyBranch(IN branch REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF branch IS NULL OR LENGTH(branch) < 2 OR LENGTH(branch) > 2 THEN
+		SET branch = '  ';
+	END IF;
+	
+	RETURN branch;
+
+END;

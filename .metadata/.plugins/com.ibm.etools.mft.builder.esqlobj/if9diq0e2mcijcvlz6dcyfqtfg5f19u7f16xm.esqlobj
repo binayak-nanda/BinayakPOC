@@ -1,0 +1,13 @@
+CREATE PROCEDURE GetExceptionText(IN excpListPath REFERENCE) RETURNS CHARACTER
+BEGIN
+
+	DECLARE exceptionText CHARACTER '';
+
+	/* Loop till the last child */
+	WHILE (CARDINALITY(excpListPath.*[]) > 0) DO
+    	SET exceptionText = exceptionText || ' - ' || COALESCE(excpListPath.Text, '');
+	    MOVE excpListPath LASTCHILD;
+	END WHILE;	
+	
+	RETURN exceptionText;
+END;

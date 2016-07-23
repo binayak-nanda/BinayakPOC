@@ -1,0 +1,6 @@
+CREATE PROCEDURE CheckStatuzCd(IN status CHARACTER, INOUT hasError BOOLEAN) 
+BEGIN	
+	IF status <> '****' THEN
+		SET	hasError = TRUE;
+	END IF;
+END;

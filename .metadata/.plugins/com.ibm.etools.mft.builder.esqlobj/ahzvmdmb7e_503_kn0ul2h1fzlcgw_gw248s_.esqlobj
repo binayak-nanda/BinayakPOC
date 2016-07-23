@@ -1,0 +1,8 @@
+CREATE PROCEDURE getCharValueInBooleanReverse(IN bool CHARACTER) RETURNS BOOLEAN
+BEGIN		
+	IF UPPER(bool) = 'TRUE' OR UPPER(bool) = 'Y' OR UPPER(bool) = 'YES' THEN
+		RETURN FALSE;
+	ELSE
+		RETURN TRUE;
+	END IF;		
+END;

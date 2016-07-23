@@ -1,0 +1,25 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		DECLARE errorMessage CHARACTER;
+	    DECLARE statusCode INTEGER;
+		
+		SET OutputLocalEnvironment = InputLocalEnvironment;	
+		
+		IF EXISTS(InputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault[]) THEN
+			SET errorMessage = InputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.soapenv:Fault.faultstring;
+			SET statusCode = InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code";
+			SET OutputRoot = InputRoot;
+			CALL setErrorMessage(OutputRoot, OutputLocalEnvironment, Environment, errorMessage, statusCode);
+		ELSEIF EXISTS(InputRoot.XMLNSC.soapenv:Envelope.soapenv:Body[]) THEN
+			SET OutputRoot = InputRoot;
+		ELSE
+	    	SET OutputRoot.Properties = InputRoot.Properties;
+	    	SET OutputRoot.Properties.CodedCharSetId = 1208;
+	    	SET OutputRoot.HTTPReplyHeader."Content-Type" = 'text/xml;charset=utf-8';
+	    	CREATE FIELD OutputRoot.XMLNSC;
+	    	SET errorMessage = 'HTTP error returned for request to ' || InputLocalEnvironment.WrittenDestination.HTTP.RequestURL || ': ' || InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Line";
+	    	SET statusCode = InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code";
+	    	CALL setErrorMessage(OutputRoot, OutputLocalEnvironment, Environment, errorMessage, statusCode); 
+		END IF;
+		RETURN TRUE;
+	END;

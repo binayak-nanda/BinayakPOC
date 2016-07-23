@@ -1,0 +1,4 @@
+CREATE PROCEDURE b64Encode(IN source BLOB) 
+		RETURNS CHARACTER 
+		LANGUAGE JAVA 
+		EXTERNAL NAME "com.ibm.broker.javacompute.Base64.encode";

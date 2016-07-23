@@ -1,0 +1,14 @@
+CREATE PROCEDURE PerformSafetyNetIntToDateConversion(INOUT pTargetField REFERENCE, IN pSourceField INTEGER, IN pDatePattern CHARACTER)
+BEGIN
+	
+	DECLARE tmpDate DATE;
+	
+	SET tmpDate = ConvertNumberToDate(pSourceField, pDatePattern);
+	
+	IF (tmpDate IS NULL) THEN
+		SET pTargetField.(XML.Content) = NULL;
+	ELSE 
+		SET pTargetField = tmpDate;
+	END IF;
+	
+END;

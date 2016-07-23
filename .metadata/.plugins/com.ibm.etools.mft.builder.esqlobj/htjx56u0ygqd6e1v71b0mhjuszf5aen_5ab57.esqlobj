@@ -1,0 +1,10 @@
+CREATE PROCEDURE GetPolicyCompany(IN company REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF company IS NULL OR LENGTH(company) < 1 OR LENGTH(company) > 1 THEN
+		SET company = '1';
+	END IF;
+	
+	RETURN company;
+
+END;

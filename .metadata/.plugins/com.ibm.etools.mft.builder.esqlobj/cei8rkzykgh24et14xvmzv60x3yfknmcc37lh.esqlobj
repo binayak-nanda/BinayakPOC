@@ -1,0 +1,7 @@
+CREATE FUNCTION ConvertStringToInteger(pString CHARACTER) RETURNS INTEGER
+BEGIN
+	
+    DECLARE targetInteger INTEGER CAST(pString AS INTEGER DEFAULT 0);
+
+	RETURN targetInteger;
+END;

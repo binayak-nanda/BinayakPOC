@@ -1,0 +1,17 @@
+
+
+Importing file: C:\workspaces\V10_735\SAMPLE\SAMPLE.dbm
+
+
+Processing schema IIBADMIN.
+Creating complex type for table EMPLOYEE.
+Creating global element for table EMPLOYEE.
+Creating file \EmployeeServiceInterface\sample\iibadmin\SAMPLE.xsd in the workspace.
+
+Elapsed time processing this message definition file: 6.25 seconds
+Number of warnings for this message definition file: 0
+
+
+Number of files processed: 1
+
+

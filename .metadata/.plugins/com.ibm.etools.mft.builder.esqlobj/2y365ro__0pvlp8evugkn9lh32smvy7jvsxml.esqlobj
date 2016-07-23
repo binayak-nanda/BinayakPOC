@@ -1,0 +1,8 @@
+CREATE PROCEDURE SetMessageProperties(IN pRootRef REFERENCE, IN pMsgSet CHARACTER, IN pMsgType CHARACTER, IN pMsgFormat CHARACTER) 
+BEGIN
+		
+	SET pRootRef.Properties.MessageSet    = pMsgSet;
+	SET pRootRef.Properties.MessageType   = pMsgType;
+    SET pRootRef.Properties.MessageFormat = pMsgFormat;
+		
+END;

@@ -1,0 +1,19 @@
+CREATE FILTER MODULE MQReplyRequired
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+	    IF (LENGTH(TRIM(Root.MQMD.ReplyToQ)) > 0) THEN
+			/*
+			 Reply to calling application required.
+  		    */
+			RETURN TRUE;
+		ELSE
+			/*
+			 No Reply.
+			*/
+			RETURN FALSE;
+		END IF;			
+
+	END;
+
+END MODULE;

@@ -1,0 +1,50 @@
+CREATE COMPUTE MODULE ESBFTPInput_MapFTPOutToCommonEvent
+	--DECLARE LoggingPoint EXTERNAL CHARACTER;
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+		DECLARE inputRootRef REFERENCE TO InputRoot;
+		DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+
+		DECLARE envRef REFERENCE TO Environment;
+		DECLARE envFileRef REFERENCE TO InputLocalEnvironment;
+		
+		CALL shared.StoreInputRoot(inputRootRef, envRef);
+		CALL LoadProperties(envRef);
+		--SET envRef.Variables.Log.CurrentLogPoint = LogPoint; -- Taken from promoted UDP.
+
+		SET Environment.Variables.QBE.ESBEvent.Event.Role = 'info';
+
+		DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+
+		CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+		SET eventRef.EventSource.UserId = BrokerUserId;
+		SET eventRef.MessageContext.Destination.Transport = 'ftp';
+		SET eventRef.MessageContext.Destination.Type = 'folder';
+		SET eventRef.MessageContext.Destination.Name = InputLocalEnvironment.File.Directory;
+		/* Copy the message body if it exists. */
+		-- IF (CARDINALITY(InputBody.*[]) > 0) THEN
+		-- -- EVAL('SET ' || 'OutputRoot.' || FIELDNAME(InputBody) || ' = InputBody;');
+		-- SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		-- END IF;
+
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

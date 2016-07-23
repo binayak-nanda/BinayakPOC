@@ -1,0 +1,6 @@
+CREATE PROCEDURE SetLogPoint(IN pESBEvent REFERENCE, IN pLogPoint CHARACTER) 
+BEGIN
+	
+	SET pESBEvent.LogPoint = pLogPoint;	
+    		
+END;

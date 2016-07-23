@@ -1,0 +1,14 @@
+CREATE COMPUTE MODULE OverrideMessageExpiry
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+
+		CALL CopyEntireMessage();
+		IF OverrideExpiry THEN
+			SET OutputRoot.MQMD.Expiry = -1;		
+		END IF;
+		RETURN TRUE;
+	END;
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

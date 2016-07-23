@@ -1,0 +1,15 @@
+CREATE FUNCTION ConvertNumberToDate(pDate INTEGER, pDateFormat CHARACTER) RETURNS DATE
+BEGIN
+	
+	DECLARE targetDate DATE;
+	DECLARE charDate CHARACTER '';
+	
+	IF (pDate = 0 OR pDate = 99999999) THEN
+		SET targetDate = NULL;
+	ELSE
+		SET charDate = CAST(pDate AS CHARACTER);
+		SET targetDate = CAST(charDate AS DATE FORMAT pDateFormat);
+	END IF;	
+
+	RETURN targetDate;
+END;

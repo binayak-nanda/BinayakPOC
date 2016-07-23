@@ -1,0 +1,62 @@
+CREATE COMPUTE MODULE MapJMSOutToCommonEvent
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+
+		SET OutputRoot = InputRoot;
+				
+		DECLARE outputRootRef REFERENCE TO OutputRoot;
+		DECLARE inputRootRef REFERENCE TO InputRoot;
+        DECLARE inputPropRef REFERENCE TO InputRoot.Properties;
+        DECLARE inputJMSHdrRef REFERENCE TO InputRoot.JMSTransport.Transport_Folders.Header_Values;
+        DECLARE inputJMSTransportRef REFERENCE TO InputRoot.JMSTransport.Transport_Folders;
+        DECLARE payloadBlob BLOB '';
+        
+        DECLARE envRef REFERENCE TO Environment;
+        
+        CALL StoreInputRoot(inputRootRef, envRef);
+        
+        CALL LoadProperties(envRef);
+        
+        SET Environment.Variables.QBE.ESBEvent.Event.Role = 'info';
+        
+        DECLARE eventRef REFERENCE TO Environment.Variables.QBE.ESBEvent.Event;
+        
+        CALL MapCommonInfoToCommonEvent(envRef, inputPropRef, outputRootRef);
+        
+        SET eventRef.EventSource.UserId VALUE             = InputRoot.JMSTransport.Transport_Folders.Standard_Properties.JMSXUserID; -- Gets set in flow specific esql
+                
+		SET eventRef.MessageContext.MessageId             = inputJMSHdrRef.JMSMessageID;
+		SET eventRef.MessageContext.CorrelationId         = inputJMSHdrRef.JMSCorrelationID;
+		SET eventRef.MessageContext.Destination.Transport = 'jms';	
+		SET eventRef.MessageContext.Destination.Name      = envRef.Variables.Properties.SourceDestination;
+		SET eventRef.MessageContext.Destination.Type      = 'queue';
+
+  	    /* Copy the message body if it exists. */
+		IF (CARDINALITY(InputBody.*[]) > 0) THEN
+			-- SET eventRef.MessageContext.Payload = ASBITSTREAM(InputBody ENCODING InputRoot.Properties.Encoding CCSID InputRoot.Properties.CodedCharSetId);
+            -- SET payloadBlob = ASBITSTREAM(InputRoot.*[<] ENCODING InputRoot.Properties.Encoding CCSID InputRoot.Properties.CodedCharSetId); 
+			-- DECLARE msgBody BLOB ASBITSTREAM(InputRoot, InputRoot.Properties.Encoding, InputRoot.Properties.CodedCharSetId);
+            -- DECLARE charMsgBody CHAR CAST(msgBody AS CHAR CCSID InputProperties.CodedCharSetId); 
+			
+			-- SET payloadBlob = ASBITSTREAM(InputRoot.*[<] CCSID InputRoot.Properties.CodedCharSetId); 
+			-- EVAL('SET ' || 'OutputRoot.' || FIELDNAME(InputBody) || ' = InputBody;');
+			SET OutputRoot.{FIELDNAME(InputBody)} = InputBody;
+		END IF;
+ 
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

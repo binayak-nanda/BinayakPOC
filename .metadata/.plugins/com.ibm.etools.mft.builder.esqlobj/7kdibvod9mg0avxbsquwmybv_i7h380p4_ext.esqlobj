@@ -1,0 +1,53 @@
+CREATE PROCEDURE PadDecimalPlaces(IN element CHARACTER, IN decimalPlaces INTEGER) RETURNS CHARACTER
+BEGIN
+	DECLARE outputValue CHARACTER element;
+	
+	IF element IS NOT NULL THEN
+		DECLARE decimalPosition INTEGER POSITION(DECIMAL_POINT IN element);
+		
+		IF decimalPosition = 0 THEN
+			IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+				SET outputValue = outputValue || APPEND_DECIMAL_AND_ONE_ZERO;
+			ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+				SET outputValue = outputValue || APPEND_DECIMAL_AND_TWO_ZEROS;
+			ELSEIF decimalPlaces = THREE_DECIMAL_PLACE THEN
+				SET outputValue = outputValue || APPEND_DECIMAL_AND_THREE_ZEROS;
+			END IF;
+		ELSE
+			DECLARE decimalString CHARACTER SUBSTRING(element FROM decimalPosition);
+			DECLARE decimalStringLength INTEGER LENGTH(decimalString) - 1; --Take away the decimal place.
+			
+			IF decimalStringLength = 0 THEN
+				IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_ONE_ZERO;
+				ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_TWO_ZEROS;
+				ELSEIF decimalPlaces = THREE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_THREE_ZEROS;
+				END IF;				
+			ELSEIF decimalStringLength = 1 THEN				
+				IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+					-- Do nothing. 
+				ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_ONE_ZERO;
+				ELSEIF decimalPlaces = THREE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_TWO_ZEROS;
+				END IF;
+			ELSEIF decimalStringLength = 2 THEN				
+				IF decimalPlaces = THREE_DECIMAL_PLACE THEN
+					SET outputValue = outputValue || APPEND_ONE_ZERO;
+				END IF;
+			END IF;				
+		END IF;
+		
+		
+	ELSE
+		IF decimalPlaces = ONE_DECIMAL_PLACE THEN
+			SET outputValue = ONE_DECIMAL_PLACES;
+		ELSEIF decimalPlaces = TWO_DECIMAL_PLACE THEN
+			SET outputValue = TWO_DECIMAL_PLACES;
+		END IF;
+	END IF;
+	
+	RETURN outputValue;
+END;

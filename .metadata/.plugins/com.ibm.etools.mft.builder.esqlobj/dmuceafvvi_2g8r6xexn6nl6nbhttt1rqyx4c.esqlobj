@@ -1,0 +1,10 @@
+CREATE PROCEDURE GetPolicyProduct(IN product REFERENCE) RETURNS CHARACTER
+BEGIN	
+	
+	IF product IS NULL OR LENGTH(product) < 3 OR LENGTH(product) > 3 THEN
+		SET product = '   ';
+	END IF;
+	
+	RETURN product;
+
+END;

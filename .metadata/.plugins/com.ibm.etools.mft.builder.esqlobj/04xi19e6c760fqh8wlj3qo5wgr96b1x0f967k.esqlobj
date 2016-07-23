@@ -1,0 +1,22 @@
+CREATE FILTER MODULE ESBLogFeederTraceOn
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE envRef REFERENCE TO Environment;
+		DECLARE traceFlag BOOLEAN FALSE;
+		
+		-- UDPs cannot be promoted more than one level. Have to set TraceLevel in environment and then use that value.
+		SET envRef.Variables.TempTraceLevel = TraceLevel; 
+			
+		-- Trace flow if TraceLevel is turned on or is not set. we want to capture the NotSets.		
+	    IF (envRef.Variables.Properties.TraceLevel IN ('ON','NotSet')) THEN
+			SET traceFlag = TRUE;
+	    ELSE
+	    	-- If anything other than ON set to FALSE.
+			SET traceFlag = FALSE;
+		END IF;	
+		
+		RETURN traceFlag;
+	END;
+
+END MODULE;

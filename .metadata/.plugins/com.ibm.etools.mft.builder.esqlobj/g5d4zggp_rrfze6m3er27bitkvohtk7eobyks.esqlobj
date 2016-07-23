@@ -1,0 +1,9 @@
+/*EATE FUNCTION Main() RETURNS BOOLE*/
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+  		LOG EVENT MESSAGE 2952 VALUES('System Exception on Request ID: '||InputLocalEnvironment.Destination.HTTP.RequestIdentifier);
+		THROW USER EXCEPTION VALUES('System Exception on Request ID: '||InputLocalEnvironment.Destination.HTTP.RequestIdentifier);
+		RETURN TRUE;
+	END;
+
