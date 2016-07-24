@@ -5,6 +5,7 @@ CREATE COMPUTE MODULE SampleMF_Compute
 	BEGIN
 		 CALL CopyMessageHeaders();
 		 CALL CopyEntireMessage();
+		 SET Environment.Varibales.Name = 'Binayak Nanda';
 		RETURN TRUE;
 	END;
 
