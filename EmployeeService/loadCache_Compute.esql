@@ -2,7 +2,7 @@ CREATE COMPUTE MODULE loadCache_Compute
 
 CREATE FUNCTION Main() RETURNS BOOLEAN
 BEGIN
-
+---Test
  CALL CopyEntireMessage();
 					
  -- Declare a location to hold the data returned from the database service call
