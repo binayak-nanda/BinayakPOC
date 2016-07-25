@@ -36,6 +36,9 @@
 <workingSet editPageId="com.ibm.etools.mft.navigator.BrokerWorkingSet.AppLib" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1460110569633_19" label="[EmailNodesTest]" name="[EmailNodesTest]">
 <item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/EmailNodesTest" type="4"/>
 </workingSet>
+<workingSet editPageId="com.ibm.etools.mft.navigator.BrokerWorkingSet.AppLib" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1469377367589_27" label="[SampleApp]" name="[SampleApp]">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/SampleApp" type="4"/>
+</workingSet>
 <workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1441691171464_0" label="Window Working Set" name="Aggregate for window 1441691171463"/>
 <workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1448904159426_2" label="Window Working Set" name="Aggregate for window 1448904159426"/>
 <workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1452015428168_3" label="Window Working Set" name="Aggregate for window 1452015428168"/>
