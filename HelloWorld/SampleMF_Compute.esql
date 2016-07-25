@@ -3,6 +3,7 @@
 CREATE COMPUTE MODULE SampleMF_Compute
 	CREATE FUNCTION Main() RETURNS BOOLEAN
 	BEGIN
+	--Test
 		 CALL CopyMessageHeaders();
 		 CALL CopyEntireMessage();
 		 SET Environment.Varibales.Name = 'Binayak Nanda';
